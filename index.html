@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo Các Thẻ HTML Cơ Bản</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="container">
+      <p class="eyebrow">HTML cho người mới bắt đầu</p>
+      <h1>Demo các thẻ HTML cơ bản</h1>
+      <p class="hero-text">
+        Trang này tổng hợp các thẻ HTML cần biết khi mới học lập trình web:
+        cấu trúc tài liệu, thẻ văn bản, liên kết, hình ảnh, danh sách, bảng và thẻ container.
+      </p>
+
+      <div class="hero-grid">
+        <div class="hero-card">
+          <h2>HTML là gì?</h2>
+          <p>
+            HTML là ngôn ngữ đánh dấu dùng để tạo cấu trúc cho trang web. Trình duyệt đọc các thẻ HTML
+            để hiểu nội dung nào là tiêu đề, đoạn văn, liên kết, hình ảnh hay bảng.
+          </p>
+        </div>
+
+        <div class="hero-card">
+          <h2>Cấu trúc cú pháp</h2>
+          <pre><code>&lt;tag&gt;Nội dung&lt;/tag&gt;
+&lt;br&gt;
+&lt;img src="anh.jpg" alt="Mô tả"&gt;</code></pre>
+        </div>
+
+        <div class="hero-card highlights">
+          <h2>Nhóm thẻ chính</h2>
+          <ul>
+            <li>Thẻ bao quanh: <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, <code>&lt;body&gt;</code></li>
+            <li>Thẻ văn bản: <code>&lt;h1&gt;</code> - <code>&lt;h6&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code></li>
+            <li>Thẻ liên kết và hình ảnh: <code>&lt;a&gt;</code>, <code>&lt;img&gt;</code></li>
+            <li>Thẻ danh sách và bảng: <code>&lt;ul&gt;</code>, <code>&lt;ol&gt;</code>, <code>&lt;li&gt;</code>, <code>&lt;table&gt;</code></li>
+            <li>Thẻ container: <code>&lt;div&gt;</code>, <code>&lt;span&gt;</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="quick-nav">
+    <div class="container nav-links">
+      <a href="#cau-truc">Cấu trúc</a>
+      <a href="#van-ban">Văn bản</a>
+      <a href="#lien-ket-hinh-anh">Liên kết và hình ảnh</a>
+      <a href="#danh-sach-bang">Danh sách và bảng</a>
+      <a href="#container">Container</a>
+      <a href="#mau-hoan-chinh">Mẫu hoàn chỉnh</a>
+    </div>
+  </nav>
+
+  <main class="container main-content">
+    <section id="cau-truc" class="section-block">
+      <div class="section-heading">
+        <p class="section-label">1. Cấu trúc tài liệu HTML</p>
+        <h2>Các thẻ tạo khung cho một trang web</h2>
+        <p>
+          Đây là nhóm thẻ quan trọng nhất, vì chúng xác định phần nào là thông tin cấu hình
+          và phần nào là nội dung hiển thị cho người dùng.
+        </p>
+      </div>
+
+      <div class="card-grid">
+        <article class="tag-card">
+          <h3>&lt;!DOCTYPE html&gt;</h3>
+          <p class="tag-purpose">Khai báo tài liệu đang sử dụng HTML5.</p>
+          <p><strong>Thuộc tính:</strong> Không có.</p>
+          <p><strong>Cách dùng:</strong> Đặt ở dòng đầu tiên của file HTML.</p>
+          <pre><code>&lt;!DOCTYPE html&gt;</code></pre>
+        </article>
+
+        <article class="tag-card">
+          <h3>&lt;html&gt;</h3>
+          <p class="tag-purpose">Thẻ gốc bao quanh toàn bộ trang.</p>
+          <p><strong>Thuộc tính quan trọng:</strong> <code>lang</code> để khai báo ngôn ngữ.</p>
+          <p><strong>Cách dùng:</strong> Bao quanh cả <code>&lt;head&gt;</code> và <code>&lt;body&gt;</code>.</p>
+          <pre><code>&lt;html lang="vi"&gt;
+  ...
+&lt;/html&gt;</code></pre>
+        </article>
+
+        <article class="tag-card">
+          <h3>&lt;head&gt;</h3>
+          <p class="tag-purpose">Chứa thông tin cấu hình, meta, tiêu đề trang, liên kết CSS.</p>
+          <p><strong>Thuộc tính:</strong> Thường không dùng thuộc tính đặc biệt.</p>
+          <p><strong>Cách dùng:</strong> Không hiển thị trực tiếp trên trang.</p>
+          <pre><code>&lt;head&gt;
+  &lt;title&gt;Trang demo&lt;/title&gt;
+&lt;/head&gt;</code></pre>
+        </article>
+
+        <article class="tag-card">
+          <h3>&lt;body&gt;</h3>
+          <p class="tag-purpose">Chứa toàn bộ nội dung hiển thị trên trình duyệt.</p>
+          <p><strong>Thuộc tính:</strong> Có thể gán <code>class</code>, <code>id</code> để trang trí hoặc bố cục.</p>
+          <p><strong>Cách dùng:</strong> Đặt văn bản, hình ảnh, danh sách, bảng, khung nội dung bên trong.</p>
+          <pre><code>&lt;body&gt;
+  &lt;h1&gt;Xin chào&lt;/h1&gt;
+&lt;/body&gt;</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <section id="van-ban" class="section-block">
+      <div class="section-heading">
+        <p class="section-label">2. Thẻ định dạng nội dung</p>
+        <h2>Các thẻ văn bản cơ bản</h2>
+        <p>
+          Những thẻ này giúp bạn tổ chức tiêu đề, đoạn văn và định dạng một phần nội dung để trang dễ đọc hơn.
+        </p>
+      </div>
+
+      <div class="card-grid">
+        <article class="tag-card">
+          <h3>&lt;h1&gt; đến &lt;h6&gt;</h3>
+          <p class="tag-purpose">Tạo các cấp tiêu đề, từ lớn nhất đến nhỏ nhất.</p>
+          <p><strong>Thuộc tính:</strong> Có thể dùng <code>id</code>, <code>class</code>.</p>
+          <p><strong>Cách dùng:</strong> <code>&lt;h1&gt;</code> thường là tiêu đề chính của trang.</p>
+          <div class="demo-box">
+            <h1>Mẫu h1</h1>
+            <h2>Mẫu h2</h2>
+            <h3>Mẫu h3</h3>
+          </div>
+        </article>
+
+        <article class="tag-card">
+          <h3>&lt;p&gt;</h3>
+          <p class="tag-purpose">Tạo một đoạn văn bản.</p>
+          <p><strong>Thuộc tính:</strong> Có thể dùng <code>class</code>, <code>title</code>.</p>
+          <p><strong>Cách dùng:</strong> Dùng cho nội dung mô tả, giải thích, bài viết ngắn.</p>
+          <pre><code>&lt;p&gt;Đây là một đoạn văn bản HTML.&lt;/p&gt;</code></pre>
+        </article>
+
+        <article class="tag-card">
+          <h3>&lt;br&gt; và &lt;hr&gt;</h3>
+          <p class="tag-purpose"><code>&lt;br&gt;</code> xuống dòng, <code>&lt;hr&gt;</code> tạo đường kẻ ngang.</p>
+          <p><strong>Thuộc tính:</strong> Thường ít dùng, có thể gán <code>class</code>.</p>
+          <p><strong>Cách dùng:</strong> <code>&lt;br&gt;</code> là thẻ đơn, không cần đóng.</p>
+          <div class="demo-box">
+            <p>Dòng thứ nhất<br>Dòng thứ hai</p>
+            <hr>
+            <p>Phần nội dung sau đường kẻ</p>
+          </div>
+        </article>
+
+        <article class="tag-card">
+          <h3>&lt;strong&gt;, &lt;b&gt;, &lt;em&gt;, &lt;i&gt;</h3>
+          <p class="tag-purpose">Dùng để nhấn mạnh hoặc định dạng một đoạn nhỏ trong câu.</p>
+          <p><strong>Khác nhau:</strong> <code>&lt;strong&gt;</code> và <code>&lt;em&gt;</code> mang ý nghĩa nhấn mạnh; <code>&lt;b&gt;</code>, <code>&lt;i&gt;</code> nghiêng về hiển thị.</p>
+          <p><strong>Cách dùng:</strong> Dùng khi cần nhấn từ khóa quan trọng.</p>
+          <pre><code>&lt;p&gt;
+  Học HTML rất &lt;strong&gt;quan trọng&lt;/strong&gt;
+  và cũng rất &lt;em&gt;thú vị&lt;/em&gt;.
+&lt;/p&gt;</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <section id="lien-ket-hinh-anh" class="section-block">
+      <div class="section-heading">
+        <p class="section-label">3. Liên kết và hình ảnh</p>
+        <h2>Kết nối các trang và hiển thị ảnh</h2>
+        <p>
+          Đây là nhóm thẻ giúp trang web có thể điều hướng tới nội dung khác và hiển thị tài nguyên truyền thông.
+        </p>
+      </div>
+
+      <div class="card-grid">
+        <article class="tag-card">
+          <h3>&lt;a&gt;</h3>
+          <p class="tag-purpose">Tạo liên kết đến trang khác, file khác hoặc một vị trí trong cùng trang.</p>
+          <p><strong>Thuộc tính quan trọng:</strong> <code>href</code>, <code>target</code>, <code>title</code>.</p>
+          <p><strong>Cách dùng:</strong> Văn bản nằm giữa thẻ mở và thẻ đóng sẽ thành nơi có thể bấm.</p>
+          <pre><code>&lt;a href="https://developer.mozilla.org"&gt;
+  Tài liệu HTML
+&lt;/a&gt;</code></pre>
+        </article>
+
+        <article class="tag-card">
+          <h3>&lt;img&gt;</h3>
+          <p class="tag-purpose">Chèn hình ảnh vào trang web.</p>
+          <p><strong>Thuộc tính quan trọng:</strong> <code>src</code>, <code>alt</code>, <code>width</code>, <code>height</code>.</p>
+          <p><strong>Cách dùng:</strong> Luôn nên viết <code>alt</code> để mô tả ảnh.</p>
+          <div class="image-demo">
+            <img
+              src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&amp;fit=crop&amp;w=900&amp;q=80"
+              alt="Bàn làm việc với laptop và sổ tay"
+            >
+          </div>
+          <pre><code>&lt;img src="image.jpg" alt="Mô tả hình ảnh"&gt;</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <section id="danh-sach-bang" class="section-block">
+      <div class="section-heading">
+        <p class="section-label">4. Danh sách và bảng</p>
+        <h2>Tổ chức dữ liệu theo mục và theo hàng cột</h2>
+        <p>
+          Khi cần liệt kê nội dung hoặc hiển thị dữ liệu có cấu trúc, bạn sẽ gặp nhóm thẻ này rất nhiều.
+        </p>
+      </div>
+
+      <div class="card-grid">
+        <article class="tag-card">
+          <h3>&lt;ul&gt;, &lt;ol&gt;, &lt;li&gt;</h3>
+          <p class="tag-purpose">Tạo danh sách không thứ tự, có thứ tự và từng mục trong danh sách.</p>
+          <p><strong>Thuộc tính:</strong> <code>type</code>, <code>start</code> với <code>&lt;ol&gt;</code> trong một số trường hợp.</p>
+          <p><strong>Cách dùng:</strong> Mỗi mục nội dung nằm trong thẻ <code>&lt;li&gt;</code>.</p>
+          <div class="list-demo">
+            <div>
+              <p><strong>Danh sách không thứ tự</strong></p>
+              <ul>
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JavaScript</li>
+              </ul>
+            </div>
+            <div>
+              <p><strong>Danh sách có thứ tự</strong></p>
+              <ol>
+                <li>Tạo file HTML</li>
+                <li>Viết nội dung</li>
+                <li>Mở trên trình duyệt</li>
+              </ol>
+            </div>
+          </div>
+        </article>
+
+        <article class="tag-card">
+          <h3>&lt;table&gt;, &lt;tr&gt;, &lt;th&gt;, &lt;td&gt;</h3>
+          <p class="tag-purpose">Tạo bảng dữ liệu với hàng và cột.</p>
+          <p><strong>Thuộc tính:</strong> Có thể dùng <code>colspan</code>, <code>rowspan</code> trong bảng phức tạp.</p>
+          <p><strong>Cách dùng:</strong> <code>&lt;tr&gt;</code> là hàng, <code>&lt;th&gt;</code> là ô tiêu đề, <code>&lt;td&gt;</code> là ô dữ liệu.</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Thẻ</th>
+                  <th>Chức năng</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&lt;ul&gt;</td>
+                  <td>Danh sách không thứ tự</td>
+                </tr>
+                <tr>
+                  <td>&lt;ol&gt;</td>
+                  <td>Danh sách có thứ tự</td>
+                </tr>
+                <tr>
+                  <td>&lt;table&gt;</td>
+                  <td>Hiển thị dữ liệu dạng bảng</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="container" class="section-block">
+      <div class="section-heading">
+        <p class="section-label">5. Thẻ container</p>
+        <h2>Nhóm và định dạng bố cục nội dung</h2>
+        <p>
+          Hai thẻ này rất thường gặp trong thực tế vì chúng giúp bạn chia bố cục và trang trí bằng CSS.
+        </p>
+      </div>
+
+      <div class="card-grid">
+        <article class="tag-card">
+          <h3>&lt;div&gt;</h3>
+          <p class="tag-purpose">Thẻ khối dùng để nhóm nhiều thành phần lại với nhau.</p>
+          <p><strong>Thuộc tính quan trọng:</strong> <code>class</code>, <code>id</code>.</p>
+          <p><strong>Cách dùng:</strong> Thường dùng để chia khu vực trang, card, cột, section.</p>
+          <pre><code>&lt;div class="card"&gt;
+  &lt;h3&gt;Tiêu đề&lt;/h3&gt;
+  &lt;p&gt;Nội dung&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+        </article>
+
+        <article class="tag-card">
+          <h3>&lt;span&gt;</h3>
+          <p class="tag-purpose">Thẻ inline dùng để định dạng một đoạn nhỏ trong dòng văn bản.</p>
+          <p><strong>Thuộc tính quan trọng:</strong> <code>class</code>, <code>style</code>.</p>
+          <p><strong>Cách dùng:</strong> Hợp khi cần tô màu, in đậm hoặc đánh dấu một từ cụ thể.</p>
+          <div class="demo-box">
+            <p>
+              Bạn có thể dùng
+              <span class="highlight-inline">thẻ span</span>
+              để làm nổi bật một cụm từ trong câu.
+            </p>
+          </div>
+        </article>
+
+        <article class="tag-card">
+          <h3>Demo inline style</h3>
+          <p class="tag-purpose">Inline style là CSS viết trực tiếp trong thuộc tính <code>style</code> của thẻ HTML.</p>
+          <p><strong>Cú pháp:</strong> Viết ngay trong thẻ mở, ví dụ <code>style="color: red;"</code>.</p>
+          <p><strong>Cách dùng:</strong> Phù hợp khi muốn thử nhanh một kiểu hiển thị cho đúng một phần tử.</p>
+          <div class="demo-box">
+            <p style="color: #c2410c; font-weight: 700; background: #ffedd5; padding: 10px 14px; border-radius: 10px; display: inline-block;">
+              Đây là đoạn dùng inline style trực tiếp trong thẻ p.
+            </p>
+          </div>
+          <pre><code>&lt;p style="color: #c2410c; font-weight: 700;"&gt;
+  Đây là inline style
+&lt;/p&gt;</code></pre>
+          <p><strong>So với class:</strong> Nếu nhiều phần tử cần cùng một kiểu, nên tạo <code>class</code> trong file CSS để dễ sửa và gọn mã hơn.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="mau-hoan-chinh" class="section-block final-section">
+      <div class="section-heading">
+        <p class="section-label">6. Mẫu tổng hợp</p>
+        <h2>Ví dụ một file HTML cơ bản hoàn chỉnh</h2>
+        <p>
+          Đây là mẫu ngắn gọn kết hợp nhiều thẻ cơ bản. Bạn có thể dựa vào đây để tập viết một trang HTML đầu tiên.
+        </p>
+      </div>
+
+      <div class="full-example">
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="vi"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Trang HTML đầu tiên&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Xin chào HTML&lt;/h1&gt;
+  &lt;p&gt;Đây là đoạn văn đầu tiên của tôi.&lt;/p&gt;
+
+  &lt;a href="https://example.com"&gt;Truy cập website&lt;/a&gt;
+  &lt;br&gt;
+  &lt;img src="image.jpg" alt="Ảnh ví dụ"&gt;
+
+  &lt;h2&gt;Danh sách công việc&lt;/h2&gt;
+  &lt;ul&gt;
+    &lt;li&gt;Học thẻ h1&lt;/li&gt;
+    &lt;li&gt;Học thẻ p&lt;/li&gt;
+    &lt;li&gt;Học thẻ a&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
