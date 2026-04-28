@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buổi 3 - JavaScript cơ bản</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css?v=2">
+  <script defer src="./main.js?v=2"></script>
+</head>
+<body>
+  <header class="hero">
+    <div class="container hero-layout">
+      <div class="hero-copy">
+        <p class="eyebrow">Buổi 3 · JavaScript cơ bản</p>
+        <h1>Biến, điều kiện, vòng lặp, hàm</h1>
+        <p class="hero-text">
+          Nội dung buổi học này giúp học viên nắm nền tảng JavaScript, biết viết logic xử lý dữ liệu
+          đơn giản và làm quen với tư duy giải bài toán bằng code.
+        </p>
+
+        <div class="hero-actions">
+          <a class="button button-primary" href="#muc-tieu">Xem mục tiêu</a>
+          <a class="button button-secondary" href="#thuc-hanh">Vào thực hành</a>
+        </div>
+
+        <div class="hero-stats">
+          <article>
+            <strong>4</strong>
+            <span>nhóm kiến thức chính</span>
+          </article>
+          <article>
+            <strong>4</strong>
+            <span>bài thực hành trên lớp</span>
+          </article>
+          <article>
+            <strong>1</strong>
+            <span>file main.js nền tảng</span>
+          </article>
+        </div>
+      </div>
+
+      <aside class="hero-panel">
+        <p class="panel-label">Tóm tắt buổi học</p>
+        <ul class="panel-list">
+          <li>Biến, kiểu dữ liệu, toán tử.</li>
+          <li>if/else và vòng lặp.</li>
+          <li>Function, Array, Object.</li>
+          <li>Giải bài toán thực tế bằng JavaScript.</li>
+        </ul>
+        <div class="panel-code">
+          <pre><code>let total = 0;
+if (score >= 5) {
+  console.log("Đạt");
+}</code></pre>
+        </div>
+      </aside>
+    </div>
+  </header>
+
+    <nav class="lesson-nav">
+      <div class="container nav-track">
+        <a href="#muc-tieu">Mục tiêu</a>
+        <a href="#noi-dung">Nội dung chính</a>
+        <a href="#so-sanh-vong-lap">So sánh vòng lặp</a>
+        <a href="#thuc-hanh">Thực hành</a>
+        <a href="#bai-tap-ve-nha">Bài tập về nhà</a>
+        <a href="#san-pham">Sản phẩm</a>
+      </div>
+    </nav>
+
+  <main class="container main-content">
+    <section id="muc-tieu" class="section">
+      <div class="section-heading">
+        <p class="section-label">1. Mục tiêu</p>
+        <h2>Nắm nền tảng JavaScript để xử lý dữ liệu đơn giản</h2>
+        <p>
+          Sau buổi học, học viên hiểu được cách khai báo biến, dùng điều kiện, lặp qua dữ liệu,
+          viết hàm và thao tác với mảng, object trong các bài toán cơ bản.
+        </p>
+      </div>
+
+      <div class="card-grid three-up">
+        <article class="info-card">
+          <h3>Kiến thức</h3>
+          <p>Nắm được biến, kiểu dữ liệu, toán tử và các cấu trúc điều khiển thường dùng.</p>
+        </article>
+        <article class="info-card">
+          <h3>Logic</h3>
+          <p>Biết phân tích dữ liệu đầu vào, chọn điều kiện xử lý và tách bài toán thành hàm nhỏ.</p>
+        </article>
+        <article class="info-card">
+          <h3>Thực hành</h3>
+          <p>Viết được các bài nhỏ như tính điểm trung bình, tìm phần tử lớn nhất và quản lý mảng sản phẩm.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="noi-dung" class="section">
+      <div class="section-heading">
+        <p class="section-label">2. Nội dung chính</p>
+        <h2>Chia kiến thức theo từng khối dễ giảng và dễ nhớ</h2>
+        <p>Phần này bám theo đúng mạch học của lớp: từ khai báo dữ liệu đến tư duy giải bài toán bằng JavaScript.</p>
+      </div>
+
+      <div class="card-grid">
+        <article class="lesson-card">
+          <h3>Biến, kiểu dữ liệu, toán tử</h3>
+          <p>Giới thiệu <code>let</code>, <code>const</code>, số, chuỗi, boolean, so sánh và phép toán số học.</p>
+          <pre><code>const name = "An";
+let score = 8.5;
+const isPassed = score &gt;= 5;</code></pre>
+        </article>
+
+        <article class="lesson-card">
+          <h3>if/else và switch case</h3>
+          <p>Dùng điều kiện để rẽ nhánh theo đúng logic bài toán và chọn nhiều trường hợp với <code>switch</code>.</p>
+          <pre><code>const day = 2;
+
+if (day === 1) {
+  console.log("Chủ nhật");
+} else {
+  console.log("Ngày thường");
+}</code></pre>
+          <div class="card-actions">
+            <button class="button button-secondary" data-demo="ifelse">Xem if/else</button>
+            <button class="button button-secondary" data-demo="switch">Xem switch case</button>
+          </div>
+        </article>
+
+        <article class="lesson-card">
+          <h3>Loop: for, forEach, for...in, while, do...while</h3>
+          <p>Dùng vòng lặp để duyệt mảng, duyệt object và lặp theo điều kiện cho đến khi đạt yêu cầu.</p>
+          <pre><code>for (let i = 0; i &lt; 3; i++) {
+  console.log(i);
+}</code></pre>
+            <div class="card-actions loop-actions">
+              <button class="button button-secondary" data-demo="for">for</button>
+              <button class="button button-secondary" data-demo="foreach">forEach</button>
+              <button class="button button-secondary" data-demo="forin">for...in</button>
+              <button class="button button-secondary" data-demo="while">while</button>
+              <button class="button button-secondary" data-demo="dowhile">do...while</button>
+              <button class="button button-secondary" data-demo="break">break</button>
+              <button class="button button-secondary" data-demo="continue">continue</button>
+            </div>
+          </article>
+
+        <article class="lesson-card">
+          <h3>Function</h3>
+          <p>Tách logic thành hàm để tái sử dụng, kiểm thử và giải thích bài toán rõ hơn.</p>
+          <pre><code>function greet(name) {
+  return `Xin chào, ${name}`;
+}</code></pre>
+        </article>
+
+        <article class="lesson-card">
+          <h3>Array, Object</h3>
+          <p>Làm việc với danh sách và dữ liệu có cấu trúc, đặc biệt là các bài quản lý sản phẩm và sinh viên.</p>
+          <pre><code>const products = [
+  { id: 1, name: "Áo thun", price: 120000 }
+];</code></pre>
+        </article>
+        </div>
+      </section>
+
+      <section id="so-sanh-vong-lap" class="section section-compare">
+        <div class="section-heading">
+          <p class="section-label">2.1. So sánh nhanh</p>
+          <h2>for, forEach và while khác nhau thế nào?</h2>
+          <p>
+            Đây là phần chốt nhanh để học viên nhớ đúng công cụ cho từng tình huống.
+            Có thể dùng như một slide chuyển ý trước khi sang thực hành.
+          </p>
+        </div>
+
+        <div class="compare-grid">
+          <article class="compare-card">
+            <h3>for</h3>
+            <p>Dùng khi cần lặp theo chỉ số, duyệt mảng có kiểm soát và có thể dừng giữa chừng.</p>
+            <ul>
+              <li>Mạnh nhất khi cần index.</li>
+              <li>Dễ kết hợp <code>break</code> và <code>continue</code>.</li>
+              <li>Phù hợp cho học viên mới vì cú pháp rõ ràng.</li>
+            </ul>
+          </article>
+
+          <article class="compare-card">
+            <h3>forEach</h3>
+            <p>Dùng khi chỉ cần duyệt từng phần tử của mảng và thực hiện hành động với phần tử đó.</p>
+            <ul>
+              <li>Viết ngắn, dễ đọc.</li>
+              <li>Không dùng để thoát vòng lặp sớm.</li>
+              <li>Hợp với xử lý hiển thị, map dữ liệu, log danh sách.</li>
+            </ul>
+          </article>
+
+          <article class="compare-card">
+            <h3>while</h3>
+            <p>Dùng khi chưa biết trước số lần lặp, chỉ biết điều kiện dừng.</p>
+            <ul>
+              <li>Hợp với bài toán lặp theo trạng thái.</li>
+              <li>Cần cập nhật điều kiện cẩn thận để tránh lặp vô hạn.</li>
+              <li>Rất hữu ích khi làm bài tập logic cơ bản.</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="compare-note">
+          <strong>Gợi ý nhớ nhanh:</strong>
+          <span>cần index thì chọn <code>for</code>, chỉ đọc từng phần tử thì chọn <code>forEach</code>, chưa biết số lần lặp thì chọn <code>while</code>.</span>
+        </div>
+      </section>
+
+      <section id="thuc-hanh" class="section section-accent">
+        <div class="section-heading">
+          <p class="section-label">3. Thực hành trên lớp</p>
+        <h2>Bốn bài nhỏ để học viên nhìn thấy logic chạy ngay</h2>
+        <p>
+          Bấm vào từng nút để xem kết quả minh họa. Nội dung tương ứng với các bài tập nền tảng trong buổi học.
+        </p>
+      </div>
+
+      <div class="practice-grid">
+        <div class="practice-cards">
+          <article class="practice-card">
+            <div>
+              <p class="practice-tag">Bài 1</p>
+              <h3>Tính điểm trung bình</h3>
+              <p>Từ một mảng điểm, cộng tổng rồi chia cho số lượng phần tử.</p>
+            </div>
+            <pre><code>calculateAverage([8, 9, 7.5, 10]);</code></pre>
+            <button class="button button-secondary" data-demo="average">Xem kết quả mẫu</button>
+          </article>
+
+          <article class="practice-card">
+            <div>
+              <p class="practice-tag">Bài 2</p>
+              <h3>Kiểm tra chẵn/lẻ</h3>
+              <p>Dùng toán tử chia lấy dư để xác định một số là chẵn hay lẻ.</p>
+            </div>
+            <pre><code>isEven(17);</code></pre>
+            <button class="button button-secondary" data-demo="evenodd">Xem kết quả mẫu</button>
+          </article>
+
+          <article class="practice-card">
+            <div>
+              <p class="practice-tag">Bài 3</p>
+              <h3>Tìm phần tử lớn nhất</h3>
+              <p>Đi qua mảng số và tìm giá trị lớn nhất.</p>
+            </div>
+            <pre><code>findMax([12, 7, 23, 9, 15]);</code></pre>
+            <button class="button button-secondary" data-demo="max">Xem kết quả mẫu</button>
+          </article>
+
+          <article class="practice-card">
+            <div>
+              <p class="practice-tag">Bài 4</p>
+              <h3>Thao tác mảng sản phẩm</h3>
+              <p>Lọc, đổi trạng thái và định dạng danh sách sản phẩm để hiển thị ra màn hình.</p>
+            </div>
+            <pre><code>formatProducts(products);</code></pre>
+            <button class="button button-secondary" data-demo="products">Xem kết quả mẫu</button>
+          </article>
+        </div>
+
+        <aside class="output-card">
+          <p class="output-label">Kết quả minh họa</p>
+          <div id="demo-output" class="demo-output" aria-live="polite"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="bai-tap-ve-nha" class="section">
+      <div class="section-heading">
+        <p class="section-label">4. Bài tập về nhà</p>
+        <h2>Luyện thêm để củng cố tư duy JavaScript cơ bản</h2>
+        <p>Phần này có thể giao dưới dạng danh sách bài tập ngắn, học viên làm độc lập hoặc theo cặp.</p>
+      </div>
+
+      <div class="homework-grid">
+        <article class="homework-card">
+          <h3>10 bài luyện JavaScript cơ bản</h3>
+          <ol>
+            <li>Khai báo biến lưu tên, tuổi và in ra câu giới thiệu.</li>
+            <li>Tính tổng hai số và in kết quả.</li>
+            <li>Kiểm tra một số là chẵn hay lẻ.</li>
+            <li>Tìm số lớn nhất trong một mảng số.</li>
+            <li>Tính tổng các phần tử trong mảng.</li>
+            <li>Đếm số phần tử lớn hơn 10 trong mảng.</li>
+            <li>Viết hàm đảo ngược một chuỗi.</li>
+            <li>Lọc ra các số dương từ một mảng hỗn hợp.</li>
+            <li>Đếm số lần xuất hiện của một ký tự trong chuỗi.</li>
+            <li>Viết hàm quản lý danh sách sinh viên: thêm, sửa, xóa.</li>
+          </ol>
+        </article>
+
+        <article class="homework-card">
+          <h3>Hướng dẫn làm bài quản lý sinh viên</h3>
+          <p>
+            Bắt đầu bằng một mảng các object có <code>id</code>, <code>name</code>, <code>score</code>,
+            sau đó tách ra ba hàm riêng cho thêm, sửa và xóa. Cách làm này giúp học viên luyện tư duy
+            xử lý dữ liệu theo từng bước.
+          </p>
+          <pre><code>const students = [
+  { id: 1, name: "An", score: 8 },
+  { id: 2, name: "Bình", score: 7.5 }
+];</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <section id="san-pham" class="section">
+      <div class="section-heading">
+        <p class="section-label">5. Sản phẩm buổi học</p>
+        <h2>File <code>main.js</code> gồm bộ bài tập nền tảng</h2>
+        <p>
+          Đây là file trung tâm chứa các hàm mẫu, dữ liệu minh họa và phần demo tương tác để bạn mở Console
+          hoặc bấm trực tiếp trên trang khi giảng.
+        </p>
+      </div>
+
+      <div class="card-grid">
+        <article class="deliverable-card">
+          <h3>Các hàm chính</h3>
+          <ul>
+            <li><code>calculateAverage(scores)</code></li>
+            <li><code>isEven(number)</code></li>
+            <li><code>findMax(numbers)</code></li>
+            <li><code>addStudent(students, student)</code></li>
+            <li><code>updateStudent(students, id, updates)</code></li>
+            <li><code>deleteStudent(students, id)</code></li>
+          </ul>
+        </article>
+
+        <article class="deliverable-card">
+          <h3>Cách dùng nhanh</h3>
+          <p>Mở DevTools rồi chạy:</p>
+          <pre><code>window.bai3.calculateAverage([8, 9, 7.5, 10]);
+window.bai3.isEven(14);</code></pre>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>Buổi 3 · JavaScript cơ bản</p>
+      <p>Trang trình chiếu trực tiếp cho lớp học và bài tập nền tảng.</p>
+    </div>
+  </footer>
+</body>
+</html>
