@@ -13,6 +13,19 @@ pnpm dev
 # or
 bun dev
 ```
+Tại ứng dụng react với nextjs: npx create-react-router@latest
+Cài đặt các thư viện phụ thuộc: npm i hoặc npm install
+Cài đặt phiên bản chính xác:
+npm install package-name@1.2.3
+Ví dụ: npm install lodash@4.17.21.
+Cài đặt phiên bản theo phạm vi (Range):
+npm install package-name@"^1.2.3"
+Dấu ^ (caret) cho phép cập nhật phiên bản phụ (minor) và bản vá (patch), nhưng không phải phiên bản chính (major).
+Cài đặt phiên bản mới nhất (latest):
+npm install package-name@latest
+Lệnh này cài đặt phiên bản ổn định nhất hiện có.
+Cài đặt thư viện như devDependency:
+npm install package-name@1.2.3 --save-dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 

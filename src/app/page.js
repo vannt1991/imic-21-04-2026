@@ -1,66 +1,58 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import { SiteHeader } from "@/components/site-header";
+import { HeroSection } from "@/components/hero-section";
+import { FeaturedProducts } from "@/components/featured-products";
 
-export default function Home() {
+const featuredProducts = [
+  {
+    name: "Air Runner Basic",
+    category: "Running",
+    badge: "Bestseller",
+    description: "Mẫu sneaker gọn nhẹ, phù hợp cho buổi học đầu tiên.",
+    priceLabel: "1.290.000đ",
+    note: "Dễ phối đồ",
+  },
+  {
+    name: "Street Flex Pro",
+    category: "Lifestyle",
+    badge: "New",
+    description: "Thiết kế nổi bật hơn, hợp với phong cách streetwear.",
+    priceLabel: "1.890.000đ",
+    note: "Phối outfit nhanh",
+  },
+  {
+    name: "Court Classic White",
+    category: "Classic",
+    badge: "Sale",
+    description: "Một đôi basic sạch, đơn giản, dễ dùng hằng ngày.",
+    priceLabel: "990.000đ",
+    note: "Giá dễ tiếp cận",
+  },
+];
+
+export default function HomePage() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.js file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <>
+      <SiteHeader />
+      <main>
+        <HeroSection />
+        <FeaturedProducts products={featuredProducts} />
+        <section className="story" id="story">
+          <div className="site-shell">
+            <h2>Vì sao MiniShop?</h2>
+            <p>
+              Mục tiêu của project là học App Router bằng một flow bán hàng
+              thật: landing → listing → detail → cart → checkout.
+            </p>
+          </div>
+        </section>
+
+        <section className="contact" id="contact">
+          <div className="site-shell">
+            <h2>Liên hệ</h2>
+            <p>Email demo cho buổi học đầu tiên.</p>
+          </div>
+        </section>
       </main>
-    </div>
+    </>
   );
 }

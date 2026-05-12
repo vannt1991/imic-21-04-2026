@@ -1,7 +1,7 @@
 # MiniShop Course Design
 
-Date: 2026-05-11  
-Status: Draft  
+Date: 2026-05-11
+Status: Draft
 Scope: 10-buổi course project cho Next.js App Router, giữ JavaScript, build dần một e-commerce mini-shop full-stack.
 
 ## 1. Mục tiêu
@@ -114,6 +114,7 @@ Nguyên tắc biên soạn:
 - Mỗi concept chỉ gắn 1 ví dụ chính.
 - Ưu tiên mô tả data flow hơn là chỉ liệt kê code.
 - Nếu có phần khó, viết “vì sao” trước “làm thế nào”.
+- Mỗi mục `Lý thuyết` nên giữ 4-6 dòng, mỗi dòng là 1 ý chính, không lặp lại cùng một khái niệm dưới nhiều cách nói.
 
 ## 7. Milestone 1 - Buổi 1: Setup + Landing Page
 
@@ -123,21 +124,11 @@ Tạo nền tảng project, hiểu App Router, dựng landing page bán hàng.
 
 ### Lý thuyết
 
-- React component là gì: 1 hàm nhận input và trả về UI.
-- JSX là gì: viết UI bằng cú pháp gần HTML trong JS.
-- Server Component là gì: component render ở server, không có state/event browser.
-- App Router là gì: hệ routing theo folder trong `app/`.
-- `layout.js` là khung chung, `page.js` là nội dung riêng của route.
-- Composition là gì: ghép component nhỏ thành trang lớn.
-- Vì sao landing page cần hero, CTA, featured products để dẫn người xem đi tiếp.
-
-### Mini code demo
-
-```jsx
-function Greeting({ name }) {
-  return <h1>Xin chào {name}</h1>;
-}
-```
+- React component: 1 hàm nhận input và trả về UI.
+- JSX: Javascript+XML cú pháp viết UI gần với HTML ngay trong JS.
+- Server Component: render ở server, hợp cho UI tĩnh hoặc data có sẵn.
+- App Router + `layout.js`/`page.js`: routing theo folder, layout bọc chung, page là nội dung riêng.
+- Composition + landing flow: ghép component nhỏ thành trang lớn, landing nên dẫn người dùng qua hero, CTA, featured products.
 
 ### Code demo gắn với lý thuyết
 
@@ -216,20 +207,11 @@ Hiển thị danh sách sản phẩm bằng component, props, map, conditional r
 
 ### Lý thuyết
 
-- Props là gì: cách truyền data từ component cha xuống component con.
-- Array `map()` là gì: lặp qua mảng để sinh ra nhiều phần tử UI.
-- Conditional rendering là gì: render có điều kiện theo data.
-- Data model sản phẩm tối thiểu gồm gì: tên, giá, slug, ảnh, trạng thái.
-- Vì sao nên tách helper format tiền: tránh lặp logic và giữ UI sạch.
-- Badge sale và hết hàng là cách dùng UI để thể hiện trạng thái của data.
-
-### Mini code demo
-
-```jsx
-{products.map((product) => (
-  <ProductCard key={product.id} product={product} />
-))}
-```
+- Props: cách truyền data từ component cha xuống component con.
+- `map()`: sinh list UI từ mảng data.
+- Conditional rendering: chỉ render phần UI cần thiết theo trạng thái data.
+- Product model: tối thiểu gồm tên, giá, slug, ảnh, trạng thái.
+- Format tiền + badge sale/stock: helper giúp giá nhất quán, badge thể hiện trạng thái sản phẩm.
 
 ### Code demo gắn với lý thuyết
 
@@ -307,20 +289,11 @@ Làm trang chi tiết sản phẩm bằng dynamic route.
 
 ### Lý thuyết
 
-- Route động là gì: 1 folder dùng biến thay cho tên cố định.
-- `[slug]` là gì: phần URL đại diện cho từng sản phẩm.
-- `params` là gì: object chứa tham số route hiện tại.
-- Vì sao cần `notFound()`: tránh hiển thị trang sai khi data không tồn tại.
-- Metadata là gì: title/description cho SEO và preview link.
-- SEO cơ bản là gì: giúp trang có title rõ và dễ hiểu với công cụ tìm kiếm.
-
-### Mini code demo
-
-```jsx
-export default function Page({ params }) {
-  return <h1>Slug: {params.slug}</h1>;
-}
-```
+- Dynamic route: 1 template cho nhiều URL cùng kiểu.
+- `[slug]`: biến trong URL đại diện cho từng sản phẩm.
+- `params`: object Next truyền vào khi route khớp URL.
+- `notFound()`: chặn slug sai hoặc data không tồn tại.
+- Metadata/SEO: title + description giúp trang rõ nghĩa khi share link và tìm kiếm.
 
 ### Code demo gắn với lý thuyết
 
@@ -399,23 +372,11 @@ Làm giỏ hàng trên client bằng state + context + localStorage.
 
 ### Lý thuyết
 
-- Cart là gì: nơi giữ danh sách sản phẩm người dùng muốn mua.
-- Vì sao cart cần Client Component: cần state, click handler, `localStorage`.
-- `useState` là gì: giữ dữ liệu thay đổi trong component.
-- `useEffect` là gì: chạy side effect sau khi render.
-- Context API là gì: chia sẻ state cho nhiều component không cần truyền props nhiều tầng.
-- `localStorage` là gì: bộ nhớ trên trình duyệt, tồn tại sau khi refresh.
-- Phân biệt data server và data browser: server lo data gốc, browser lo tương tác tạm thời.
-
-### Mini code demo
-
-```jsx
-const [count, setCount] = useState(0);
-
-useEffect(() => {
-  localStorage.setItem("count", String(count));
-}, [count]);
-```
+- Cart: state giữ danh sách sản phẩm người dùng muốn mua.
+- Client Component: cần cho state, handler và `localStorage`.
+- `useState`/`useEffect`: `useState` giữ state hiện tại, `useEffect` đồng bộ side effect sau render.
+- Context API: chia sẻ cart state qua nhiều component mà không cần prop drilling.
+- `localStorage` + data server/browser: lưu tạm trên browser, trong khi server giữ data gốc.
 
 ### Code demo gắn với lý thuyết
 
@@ -495,24 +456,11 @@ Thiết kế database thật cho product/category/order/user.
 
 ### Lý thuyết
 
-- Database là gì: nơi lưu dữ liệu có cấu trúc lâu dài.
-- Entity là gì: 1 đối tượng chính như Product, Order, Category.
-- Relation là gì: mối liên kết giữa các bảng.
-- Foreign key là gì: cột dùng để tham chiếu sang bảng khác.
-- One-to-many và many-to-one là gì: 1 danh mục có nhiều sản phẩm, 1 sản phẩm thuộc 1 danh mục.
-- Seed là gì: dữ liệu mẫu để dev/test nhanh.
-- Prisma Client là gì: lớp query DB bằng JS an toàn hơn SQL thô.
-- Migration là gì: lịch sử thay đổi schema.
-- Prisma Studio là gì: UI để xem/sửa data trực quan.
-
-### Mini code demo
-
-```prisma
-model Product {
-  id   String @id @default(cuid())
-  name String
-}
-```
+- Database: nơi lưu dữ liệu lâu dài.
+- Entity: đối tượng chính app quản lý.
+- Relation + foreign key: nối các bảng với nhau đúng cách; one-to-many/many-to-one mô tả số lượng liên kết.
+- Seed + migration: seed tạo data mẫu, migration đổi cấu trúc DB.
+- Prisma Client + Studio: query DB bằng JS và xem/sửa DB bằng UI.
 
 ### Code demo gắn với lý thuyết
 
@@ -590,21 +538,11 @@ Viết backend API trong Next.js bằng Route Handlers.
 
 ### Lý thuyết
 
-- API là gì: giao diện để frontend hoặc client khác gửi/nhận data.
-- Route Handler là gì: file xử lý request ở ngay trong App Router.
-- Request/Response Web API là gì: chuẩn nhận input và trả output của HTTP.
-- Status code là gì: mã thể hiện kết quả như 200, 201, 400, 404, 500.
-- Validation là gì: kiểm tra input trước khi ghi DB.
-- Error response nhất quán là gì: mọi lỗi trả cùng cấu trúc để dễ xử lý.
-- Vì sao không tin input từ client: dữ liệu có thể sai, thiếu, hoặc bị sửa.
-
-### Mini code demo
-
-```js
-export async function GET() {
-  return Response.json({ ok: true });
-}
-```
+- API: cửa giao tiếp giữa frontend và backend.
+- Route Handler: file xử lý HTTP ngay trong App Router.
+- Request/Response + status code: chuẩn nhận/trả dữ liệu và báo kết quả request.
+- Validation: kiểm tra input trước khi ghi DB.
+- Error response + trust boundary: lỗi nên thống nhất format, không tin input từ client.
 
 ### Code demo gắn với lý thuyết
 
@@ -683,21 +621,12 @@ Làm admin dashboard quản lý sản phẩm.
 
 ### Lý thuyết
 
-- Admin dashboard là gì: khu vực quản trị dành cho người có quyền.
-- Server Component đọc data vì gì: render dữ liệu sẵn ở server, nhẹ cho browser.
-- Server Action là gì: function chạy ở server để xử lý form/mutation.
-- Mutation là gì: thao tác làm thay đổi dữ liệu như create/update/delete.
-- `revalidatePath()` là gì: báo Next render lại route đã cache.
-- `redirect()` là gì: chuyển hướng sau khi thao tác xong.
-- Form trên server là gì: form submit trực tiếp vào action thay vì gọi API bằng tay.
-
-### Mini code demo
-
-```js
-"use server";
-
-export async function createProduct(formData) {}
-```
+- Admin dashboard: khu vực quản trị cho người có quyền.
+- Server Component: phù hợp để đọc data sẵn từ server.
+- Server Action + mutation: dùng cho thao tác ghi/sửa/xóa từ form.
+- `revalidatePath()`: làm mới route đã cache sau mutation.
+- `redirect()`: chuyển người dùng sang trang tiếp theo sau khi lưu.
+- Form trên server: submit trực tiếp vào action thay vì gọi API thủ công.
 
 ### Code demo gắn với lý thuyết
 
@@ -776,19 +705,11 @@ Cho phép đặt hàng và lưu order/order items.
 
 ### Lý thuyết
 
-- Checkout flow là gì: bước từ giỏ hàng sang tạo đơn hàng.
-- Order là gì: bản ghi xác nhận khách đặt mua hàng.
-- Order item là gì: từng dòng sản phẩm trong 1 đơn.
-- Tính total ở server vì sao: client có thể sửa dữ liệu giá.
-- Transaction là gì: nhóm thao tác phải thành công hoặc thất bại cùng nhau.
-- Giảm tồn kho khi tạo order là gì: đảm bảo stock phản ánh đúng số đã bán.
-- Vì sao không tin total từ client: total có thể bị chỉnh trên browser.
-
-### Mini code demo
-
-```js
-const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-```
+- Checkout flow: từ giỏ hàng sang tạo đơn hàng.
+- Order + order item: order là bản ghi tổng, order item là từng dòng chi tiết.
+- Total: phải do server tính, không lấy từ client.
+- Transaction: đảm bảo order và order items thành công/thất bại cùng nhau.
+- Stock decrement: trừ tồn kho ngay khi tạo order để dữ liệu bám sát thực tế.
 
 ### Code demo gắn với lý thuyết
 
@@ -867,20 +788,11 @@ Bảo vệ admin route và quản lý đơn hàng.
 
 ### Lý thuyết
 
-- Authentication là gì: xác minh bạn là ai.
-- Authorization là gì: xác định bạn được phép làm gì.
-- Role-based access là gì: phân quyền theo vai trò như ADMIN/CUSTOMER.
-- Server-side guard là gì: chặn truy cập từ server trước khi render trang.
-- Vì sao admin layout nên check quyền: tránh lộ UI và logic quản trị.
-- Tại sao không chỉ ẩn nút trong UI: ẩn UI không đồng nghĩa chặn được truy cập.
-
-### Mini code demo
-
-```js
-if (!user || user.role !== "ADMIN") {
-  redirect("/login");
-}
-```
+- Authentication: xác minh bạn là ai.
+- Authorization: xác định bạn được phép làm gì.
+- Role-based access: phân quyền theo vai trò như ADMIN/CUSTOMER.
+- Server-side guard: chặn trước khi trang được render.
+- Admin layout + UI hide: guard đặt ở layout; ẩn UI không đủ để bảo mật.
 
 ### Code demo gắn với lý thuyết
 
@@ -958,19 +870,11 @@ Hoàn thiện app thành bản có thể deploy.
 
 ### Lý thuyết
 
-- Search params là gì: tham số nằm trên URL để lọc/tìm kiếm.
-- Pagination là gì: chia dữ liệu thành nhiều trang nhỏ.
-- Metadata SEO là gì: title/description phục vụ tìm kiếm và chia sẻ link.
-- Loading UI là gì: trạng thái chờ dữ liệu.
-- Error UI là gì: màn hình khi có lỗi tải dữ liệu.
-- Empty state là gì: màn hình khi không có kết quả.
-- Build production checklist là gì: danh sách kiểm tra trước khi deploy.
-
-### Mini code demo
-
-```js
-const page = Number(searchParams.page || 1);
-```
+- Search params: tham số trên URL để lọc/tìm kiếm.
+- Pagination: chia dữ liệu thành nhiều trang nhỏ.
+- Metadata SEO: title/description phục vụ tìm kiếm và preview link.
+- Loading / error / empty state: 3 trạng thái UI cơ bản khi tải dữ liệu.
+- Build checklist: trước deploy cần kiểm tra build, env, data thật và UI states.
 
 ### Code demo gắn với lý thuyết
 
@@ -1071,7 +975,44 @@ Helpers cần có:
 - `auth` helper cho admin guard.
 - `validation` schema cho product/order.
 
-## 19. Teaching notes
+## 19. Flow diagram
+
+Luồng hoạt động chính của MiniShop:
+
+```mermaid
+flowchart LR
+  U[User] --> UI[Frontend UI<br/>Next.js App Router]
+
+  UI -->|read page data| SC[Server Components]
+  UI -->|click / submit form| AC[Client Actions<br/>State, Context, localStorage]
+  AC -->|GET / POST / PATCH / DELETE| API[Route Handlers<br/>/api/*]
+  API -->|validate with Zod| VAL[Validation]
+  VAL --> DB[(Prisma + Database)]
+  DB --> API
+  API --> UI
+
+  UI -->|admin forms| SA[Server Actions]
+  SA -->|mutate data| DB
+  SA -->|revalidatePath / redirect| UI
+
+  UI -->|checkout| CH[Checkout flow]
+  CH -->|create order + items| DB
+  CH -->|decrement stock| DB
+  CH -->|success / error| UI
+
+  UI -->|login / admin access| AUTH[Auth Guard]
+  AUTH -->|allow / redirect| UI
+```
+
+Diễn giải ngắn:
+
+- Frontend đọc data bằng Server Component khi cần render sẵn.
+- Client chỉ giữ tương tác tạm thời như cart, input, click, localStorage.
+- Backend nhận mutation qua API route hoặc Server Action.
+- DB là nguồn dữ liệu gốc cho product, order, category, user.
+- Checkout và admin mutation đều phải qua server trước khi phản hồi về UI.
+
+## 20. Teaching notes
 
 Điểm nhấn khi dạy:
 
@@ -1082,7 +1023,7 @@ Helpers cần có:
 - Với admin, nhấn mạnh “mutation cần revalidate”.
 - Với auth, nhấn mạnh “admin route không được chỉ dựa vào UI hide”.
 
-## 20. Delivery layer
+## 21. Delivery layer
 
 Mỗi buổi nên được trình bày theo format cố định để dễ dạy và dễ học:
 
@@ -1107,7 +1048,7 @@ Mẫu quick check cho mỗi buổi:
 - Buổi 9: Authentication khác authorization thế nào? Vì sao không được chỉ hide nút admin?
 - Buổi 10: Search params dùng để làm gì? Empty state khác error state ra sao?
 
-## 21. Implementation backlog
+## 22. Implementation backlog
 
 Backlog theo milestone:
 
@@ -1122,7 +1063,7 @@ Backlog theo milestone:
 9. Milestone 9: auth guard + order admin.
 10. Milestone 10: filter/search/SEO/deploy.
 
-## 22. Acceptance criteria cho spec
+## 23. Acceptance criteria cho spec
 
 Spec này đạt nếu:
 
