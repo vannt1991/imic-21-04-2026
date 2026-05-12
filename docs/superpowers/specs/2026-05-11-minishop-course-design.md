@@ -210,7 +210,7 @@ Hiển thị danh sách sản phẩm bằng component, props, map, conditional r
 - Props: cách truyền data từ component cha xuống component con.
 - `map()`: sinh list UI từ mảng data.
 - Conditional rendering: chỉ render phần UI cần thiết theo trạng thái data.
-- Product model: tối thiểu gồm tên, giá, slug, ảnh, trạng thái.
+- Product model: tối thiểu gồm tên, giá hiện tại, giá gốc, slug, ảnh, trạng thái tồn kho.
 - Format tiền + badge sale/stock: helper giúp giá nhất quán, badge thể hiện trạng thái sản phẩm.
 
 ### Code demo gắn với lý thuyết
@@ -221,6 +221,14 @@ Hiển thị danh sách sản phẩm bằng component, props, map, conditional r
 function ProductCard({ product }) {
   return <h2>{product.name}</h2>;
 }
+```
+
+- `map()`: render list từ cùng một catalog.
+
+```jsx
+{products.map((product) => (
+  <ProductCard key={product.slug} product={product} />
+))}
 ```
 
 - `conditional rendering`: sale / hết hàng.
@@ -240,8 +248,9 @@ function formatVnd(value) {
 
 ### Demo
 
-- Tạo mock data.
-- Tạo `ProductCard`.
+- Tạo mock data dùng chung cho homepage và `/products`.
+- Tạo helper `formatVnd`.
+- Nâng cấp `ProductCard`.
 - Tạo `/products`.
 
 ### Thực hành
@@ -250,6 +259,7 @@ function formatVnd(value) {
 - Badge sale nếu có `originalPrice`.
 - Badge trạng thái còn hàng/hết hàng.
 - Tạo featured products từ cùng data.
+- Dùng cùng catalog cho homepage và listing page.
 
 ### Bài tập
 
@@ -259,7 +269,7 @@ function formatVnd(value) {
 ### Tiêu chí hoàn thành
 
 - `/products` render đúng danh sách.
-- Card hiển thị giá, sale, stock state đúng.
+- Card hiển thị giá hiện tại, giá gốc, sale badge, stock state đúng.
 
 ### Lesson outline
 

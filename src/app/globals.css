@@ -173,6 +173,17 @@ select {
   margin-bottom: 24px;
 }
 
+.section-heading--split {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.section-heading__link {
+  align-self: center;
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+
 .section-heading h2 {
   font-size: clamp(1.8rem, 3vw, 2.6rem);
 }
@@ -222,13 +233,96 @@ select {
   line-height: 1.6;
 }
 
-.product-card__footer {
+.product-card__price-row {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
   align-items: center;
-  margin-top: 16px;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.product-card__compare {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.product-card__stock {
+  margin: 12px 0 0;
   font-size: 0.92rem;
+  color: var(--accent-strong);
+}
+
+.product-card--soldout {
+  opacity: 0.9;
+}
+
+.product-card__stock--soldout {
+  color: #7f1d1d;
+}
+
+.products-page__hero {
+  padding: 64px 0 28px;
+}
+
+.products-page__eyebrow {
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.78rem;
+  color: var(--accent);
+}
+
+.products-page__hero h1 {
+  margin: 0;
+  font-family: var(--font-space-grotesk), Arial, sans-serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+}
+
+.products-page__description {
+  max-width: 60ch;
+  margin: 16px 0 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.products-page__list {
+  padding: 24px 0 72px;
+}
+
+.products-page__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 960px) {
+  .featured__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .products-page__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .section-heading--split {
+    grid-template-columns: 1fr;
+  }
+
+  .section-heading__link {
+    justify-self: start;
+  }
+}
+
+@media (max-width: 640px) {
+  .featured__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .products-page__grid,
+  .section-heading--split {
+    grid-template-columns: 1fr;
+  }
 }
 
 .story,
@@ -261,10 +355,6 @@ select {
 }
 
 @media (max-width: 900px) {
-  .featured__grid {
-    grid-template-columns: 1fr;
-  }
-
   .site-header__inner {
     flex-direction: column;
     align-items: flex-start;
