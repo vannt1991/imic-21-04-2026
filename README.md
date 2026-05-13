@@ -34,3 +34,59 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+Ví dụ đầy đủ
+
+Cấu trúc:
+
+app/
+ ├── layout.js
+ ├── page.js
+ └── products/
+      ├── layout.js
+      ├── page.js
+      └── [id]/
+           └── page.js
+app/layout.js
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <header>HEADER</header>
+
+        {children}
+      </body>
+    </html>
+  )
+}
+app/products/layout.js
+export default function ProductLayout({ children }) {
+  return (
+    <div style={{ display: 'flex' }}>
+      <aside>Sidebar</aside>
+
+      <main>{children}</main>
+    </div>
+  )
+}
+app/products/page.js
+export default function ProductsPage() {
+  return <h1>Danh sách sản phẩm</h1>
+}
+app/products/[id]/page.js
+export default function ProductDetail({ params }) {
+  return <h1>Product {params.id}</h1>
+}
+10. Kết luận dễ nhớ
+page.js
+
+= “Trang thực tế”
+
+layout.js
+
+= “Khung bao quanh các trang”
+
+Và:
+
+👉 Bạn không import hay gọi chúng thủ công
+👉 Next.js tự phát hiện theo tên file + cấu trúc folder.
