@@ -57,3 +57,15 @@ export const featuredProducts = products
     ...product,
     priceLabel: formatVnd(product.price),
   }));
+
+export function getProductBySlug(slug) {
+  return products.find((product) => product.slug === slug) ?? null;
+}
+
+export function getProductSlugs() {
+  return products.map((product) => ({ slug: product.slug }));
+}
+
+export function getRelatedProducts(slug, limit = 3) {
+  return products.filter((product) => product.slug !== slug).slice(0, limit);
+}
