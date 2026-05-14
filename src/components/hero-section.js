@@ -5,8 +5,8 @@ export function HeroSection() {
         <p className="hero__eyebrow">New Collection 2026</p>
         <h1>Giày sneaker hiện đại cho nhịp sống mỗi ngày</h1>
         <p className="hero__description">
-          Khám phá các mẫu sneaker dễ phối đồ, bền, êm và đủ nổi bật để học viên
-          thấy ngay cấu trúc của một landing page bán hàng.
+          Khám phá các mẫu sneaker dễ phối đồ, bền, êm và đủ nổi bật để học
+          viên thấy ngay cấu trúc của một landing page bán hàng.
         </p>
 
         <div className="hero__actions">

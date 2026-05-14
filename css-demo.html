@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trực Quan Hóa Thuộc Tính CSS</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        /* CSS Giao diện chính */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background:
+                radial-gradient(circle at top left, rgba(0, 123, 255, 0.12), transparent 32%),
+                radial-gradient(circle at top right, rgba(40, 167, 69, 0.10), transparent 24%),
+                linear-gradient(180deg, #f7f9fc 0%, #eef3f8 100%);
+            color: #333;
+        }
+        .app-shell {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .tab-nav {
+            display: inline-flex;
+            gap: 8px;
+            padding: 6px;
+            margin: 0 0 18px 0;
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 14px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        }
+        .tab-nav button {
+            min-width: 120px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+        .tab-nav button.active {
+            background: #0056b3;
+        }
+        .tab-content[hidden] {
+            display: none !important;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 20px;
+        }
+        .control-panel {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .preview-panel {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .theory-panel {
+            background: rgba(255, 255, 255, 0.92);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .theory-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 18px;
+        }
+        .theory-card {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 16px;
+        }
+        .theory-card h3 {
+            margin-top: 0;
+            font-size: 15px;
+            color: #0f4c81;
+        }
+        .theory-card p, .theory-card li {
+            font-size: 13px;
+            line-height: 1.55;
+            color: #334155;
+        }
+        .theory-card code, .code-sample {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        }
+        .code-sample {
+            display: block;
+            margin-top: 10px;
+            padding: 12px;
+            background: #0f172a;
+            color: #dbeafe;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        h2 {
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+            font-size: 18px;
+            color: #0056b3;
+        }
+        h3 {
+            font-size: 14px;
+            margin: 15px 0 5px 0;
+            color: #555;
+        }
+        .group {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        .group p {
+            margin: 4px 0 10px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+        button {
+            background: #e7e7e7;
+            border: none;
+            padding: 6px 12px;
+            margin: 3px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #ddd;
+        }
+        button.active {
+            background: #007bff;
+            color: white;
+        }
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0 18px;
+        }
+        .toolbar .secondary {
+            background: #eef2ff;
+        }
+        .status-box {
+            margin: 0 0 14px;
+            padding: 12px 14px;
+            border: 1px solid #dbeafe;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #f8fbff 0%, #f3f8ff 100%);
+            font-size: 13px;
+            color: #1e3a5f;
+        }
+        .status-box strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+        .status-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .status-chip {
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #dbeafe;
+            color: #0f4c81;
+            font-size: 12px;
+        }
+
+        /* Vùng hiển thị kết quả test */
+        .test-zone {
+            border: 3px dashed #ccc;
+            padding: 20px;
+            background-color: #ffffff;
+            min-height: 400px;
+            transition: all 0.3s;
+            display: block;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        /* Thẻ mục tiêu chịu tác động của CSS trực tiếp */
+        #target-element {
+            width: 150px;
+            height: 150px;
+            margin: 10px;
+            padding: 15px;
+            background-color: #ff5722;
+            color: #ffffff;
+            font-size: 16px;
+            font-family: Arial;
+            font-weight: normal;
+            font-style: normal;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s;
+            border: 2px solid #333;
+        }
+
+        /* Các thẻ con phụ trợ để test các thuộc tính quan hệ cha-con */
+        .child-box {
+            background: #ffeb3b;
+            color: #000;
+            padding: 5px;
+            margin: 2px;
+            border: 1px solid #000;
+            font-size: 12px;
+            display: inline-block;
+        }
+        .sibling-box {
+            background: #9c27b0;
+            color: white;
+            padding: 15px;
+            margin: 10px;
+            display: inline-block;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .control-panel {
+                height: auto;
+                max-height: none;
+            }
+            .theory-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+    <div class="tab-nav" role="tablist" aria-label="Chuyển đổi nội dung CSS">
+        <button class="active" data-tab="playground" aria-selected="true" onclick="switchTab('playground', this)">Playground</button>
+        <button data-tab="theory" aria-selected="false" onclick="switchTab('theory', this)">Lý thuyết</button>
+    </div>
+
+    <section id="playground-view" class="tab-content">
+        <div class="container">
+            <!-- BẢNG ĐIỀU KHIỂN TƯƠNG TÁC -->
+            <div class="control-panel">
+                <h2>Bảng Điều Khiển CSS</h2>
+                <div class="toolbar">
+                    <button class="secondary" onclick="resetPlayground(this)">Reset playground</button>
+                    <button class="secondary" onclick="setDemoPreset('compact', this)">Preset: Compact</button>
+                    <button class="secondary" onclick="setDemoPreset('layout', this)">Preset: Layout</button>
+                </div>
+
+                <!-- Size -->
+                <div class="group">
+                    <h3>Kích thước (width / height)</h3>
+                    <p>Đổi kích thước hộp để thấy rõ box model.</p>
+                    <button data-active-key="width" data-default="true" onclick="changeCSS('width', '150px', this)" class="active">W: 150px</button>
+                    <button data-active-key="width" onclick="changeCSS('width', '300px', this)">W: 300px</button>
+                    <button data-active-key="width" onclick="changeCSS('width', 'auto', this)">W: auto</button>
+                    <br>
+                    <button data-active-key="height" data-default="true" onclick="changeCSS('height', '150px', this)" class="active">H: 150px</button>
+                    <button data-active-key="height" onclick="changeCSS('height', '250px', this)">H: 250px</button>
+                    <button data-active-key="height" onclick="changeCSS('height', 'auto', this)">H: auto</button>
+                </div>
+
+                <!-- Margin & Padding -->
+                <div class="group">
+                    <h3>Khoảng cách (margin / padding)</h3>
+                    <p>Margin nằm ngoài biên, padding nằm trong biên.</p>
+                    <button data-active-key="margin" data-default="true" onclick="changeCSS('margin', '10px', this)" class="active">Margin: 10px</button>
+                    <button data-active-key="margin" onclick="changeCSS('margin', '40px', this)">Margin: 40px</button>
+                    <br>
+                    <button data-active-key="padding" data-default="true" onclick="changeCSS('padding', '15px', this)" class="active">Padding: 15px</button>
+                    <button data-active-key="padding" onclick="changeCSS('padding', '35px', this)">Padding: 35px</button>
+                </div>
+
+                <!-- Color & Background -->
+                <div class="group">
+                    <h3>Màu sắc (background / color)</h3>
+                    <p>Màu nền tạo khối, màu chữ quyết định độ tương phản.</p>
+                    <button data-active-key="backgroundColor" data-default="true" onclick="changeCSS('backgroundColor', '#ff5722', this)" class="active">Nền: Cam</button>
+                    <button data-active-key="backgroundColor" onclick="changeCSS('backgroundColor', '#4caf50', this)">Nền: Xanh lá</button>
+                    <button data-active-key="backgroundColor" onclick="changeCSS('backgroundColor', '#0f172a', this)">Nền: Navy</button>
+                    <br>
+                    <button data-active-key="color" data-default="true" onclick="changeCSS('color', '#ffffff', this)" class="active">Chữ: Trắng</button>
+                    <button data-active-key="color" onclick="changeCSS('color', '#000000', this)">Chữ: Đen</button>
+                </div>
+
+                <!-- Typography -->
+                <div class="group">
+                    <h3>Font & Định dạng chữ</h3>
+                    <p>Thuộc tính chữ giúp demo rõ hơn về typography.</p>
+                    <button data-active-key="fontSize" data-default="true" onclick="changeCSS('fontSize', '16px', this)" class="active">Size: 16px</button>
+                    <button data-active-key="fontSize" onclick="changeCSS('fontSize', '24px', this)">Size: 24px</button>
+                    <br>
+                    <button data-active-key="fontFamily" data-default="true" onclick="changeCSS('fontFamily', 'Arial', this)" class="active">Font: Arial</button>
+                    <button data-active-key="fontFamily" onclick="changeCSS('fontFamily', 'Times New Roman', this)">Font: Serif</button>
+                    <br>
+                    <button data-active-key="fontWeight" data-default="true" onclick="changeCSS('fontWeight', 'normal', this)" class="active">Bình thường</button>
+                    <button data-active-key="fontWeight" onclick="changeCSS('fontWeight', 'bold', this)">Đậm (bold)</button>
+                    <br>
+                    <button data-active-key="fontStyle" data-default="true" onclick="changeCSS('fontStyle', 'normal', this)" class="active">Thẳng</button>
+                    <button data-active-key="fontStyle" onclick="changeCSS('fontStyle', 'italic', this)">Nghiêng (italic)</button>
+                    <br>
+                    <button data-active-key="textDecoration" data-default="true" onclick="changeCSS('textDecoration', 'none', this)" class="active">Không gạch</button>
+                    <button data-active-key="textDecoration" onclick="changeCSS('textDecoration', 'underline', this)">Gạch chân</button>
+                    <button data-active-key="textDecoration" onclick="changeCSS('textDecoration', 'line-through', this)">Gạch ngang</button>
+                </div>
+
+                <!-- Basic Display -->
+                <div class="group">
+                    <h3>Display cơ bản (Mục tiêu)</h3>
+                    <p>Đây là display trực tiếp của phần tử mục tiêu.</p>
+                    <button data-active-key="display" data-default="true" onclick="changeCSS('display', 'block', this)" class="active">block</button>
+                    <button data-active-key="display" onclick="changeCSS('display', 'inline', this)">inline</button>
+                    <button data-active-key="display" onclick="changeCSS('display', 'inline-block', this)">inline-block</button>
+                    <button data-active-key="display" onclick="changeCSS('display', 'none', this)">none</button>
+                </div>
+
+                <!-- Advanced Display (Layout áp dụng lên vùng Vùng Chứa) -->
+                <div class="group">
+                    <h3>Display nâng cao & Table (Vùng chứa)</h3>
+                    <p>Thử đổi layout để thấy cách con bị sắp xếp lại.</p>
+                    <button data-active-key="zoneDisplay" data-default="true" onclick="changeZoneDisplay('block', this)" class="active">Gốc (Block)</button>
+                    <button data-active-key="zoneDisplay" onclick="changeZoneDisplay('flex', this)">flex</button>
+                    <button data-active-key="zoneDisplay" onclick="changeZoneDisplay('grid', this)">grid</button>
+                    <button data-active-key="zoneDisplay" onclick="changeZoneDisplay('inline-flex', this)">inline-flex</button>
+                    <button data-active-key="zoneDisplay" onclick="changeZoneDisplay('inline-grid', this)">inline-grid</button>
+                    <button data-active-key="zoneDisplay" onclick="changeZoneDisplay('table', this)">table</button>
+                    <button onclick="changeZoneLayoutRow('table-row', this)">Con → table-row</button>
+                </div>
+
+                <!-- Flex Direction Axes -->
+                <div class="group" id="flex-axis-group" style="display:none;">
+                    <h3>Trục Flex Direction (Main/Cross Axis)</h3>
+                    <p>Chỉ hiện khi container ở chế độ flex.</p>
+                    <button data-active-key="flexDirection" data-default="true" onclick="changeFlexDirection('row', this)" class="active">row</button>
+                    <button data-active-key="flexDirection" onclick="changeFlexDirection('column', this)">column</button>
+                    <button data-active-key="flexDirection" onclick="changeFlexDirection('row-reverse', this)">row-reverse</button>
+                    <button data-active-key="flexDirection" onclick="changeFlexDirection('column-reverse', this)">column-reverse</button>
+                </div>
+            </div>
+
+            <!-- KHU VỰC HIỂN THỊ KẾT QUẢ TRỰC QUAN -->
+            <div class="preview-panel">
+                <h2 style="border-bottom: 2px solid #28a745;">Khu vực hiển thị trực quan (Vùng chứa nét đứt)</h2>
+                <div class="status-box" id="css-status">
+                    <strong>Trạng thái hiện tại</strong>
+                    <div class="status-row" id="status-row"></div>
+                </div>
+                <p style="font-size: 13px; margin: 0 0 10px 0; color: #666;">
+                    Thẻ tím ngoài quan sát <b>margin</b>. Thẻ vàng trong quan sát <b>padding</b>.
+                </p>
+
+                <!-- Vùng chứa (Test-zone) -->
+                <div class="test-zone" id="test-zone">
+                    <div class="sibling-box">Khối ngoài 1</div>
+
+                    <!-- Phần tử mục tiêu thay đổi thuộc tính -->
+                    <div id="target-element">
+                        Phần tử mục tiêu
+                        <div class="child-box">Con 1</div>
+                        <div class="child-box">Con 2</div>
+                    </div>
+
+                    <div class="sibling-box">Khối ngoài 2</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="theory-view" class="tab-content" hidden>
+        <div class="theory-panel">
+            <h2 style="border-bottom: 2px solid #0f4c81;">Lý thuyết CSS cơ bản</h2>
+            <p style="margin: 0; color: #475569; line-height: 1.6;">
+                CSS dùng để mô tả cách phần tử HTML hiển thị. Cú pháp cốt lõi là
+                <code>selector { property: value; }</code>.
+            </p>
+
+            <div class="theory-grid">
+                <div class="theory-card">
+                    <h3>1. Selector là gì</h3>
+                    <p>Selector chọn phần tử sẽ bị áp dụng style.</p>
+                    <div class="code-sample">p { color: red; }
+.card { padding: 16px; }
+#main { width: 100%; }</div>
+                    <ul>
+                        <li>Selector theo thẻ: <code>p</code></li>
+                        <li>Selector theo class: <code>.card</code></li>
+                        <li>Selector theo id: <code>#main</code></li>
+                    </ul>
+                </div>
+
+                <div class="theory-card">
+                    <h3>2. Box model</h3>
+                    <p>Mỗi phần tử là một hộp gồm content, padding, border, margin.</p>
+                    <div class="code-sample">width  → kích thước content
+padding → khoảng đệm bên trong
+border  → viền
+margin  → khoảng cách bên ngoài</div>
+                    <p>Demo bên phải đang tách rõ margin/padding để bạn quan sát trực quan.</p>
+                </div>
+
+                <div class="theory-card">
+                    <h3>3. Cascade và specificity</h3>
+                    <p>Khi nhiều rule cùng tác động, CSS sẽ ưu tiên theo độ cụ thể và thứ tự khai báo.</p>
+                    <div class="code-sample">/* ưu tiên cao hơn */
+#title { color: blue; }
+.title { color: green; }
+h1 { color: black; }</div>
+                    <p>Thứ tự thường gặp: inline style &gt; id &gt; class &gt; thẻ.</p>
+                </div>
+
+                <div class="theory-card">
+                    <h3>4. Display</h3>
+                    <p>Display quyết định phần tử chiếm chỗ và tham gia layout như thế nào.</p>
+                    <ul>
+                        <li><code>block</code>: chiếm cả dòng.</li>
+                        <li><code>inline</code>: nằm chung dòng.</li>
+                        <li><code>inline-block</code>: như inline nhưng có kích thước.</li>
+                        <li><code>none</code>: ẩn khỏi layout.</li>
+                        <li><code>flex</code>, <code>grid</code>: layout hiện đại cho cha-con.</li>
+                    </ul>
+                </div>
+
+                <div class="theory-card">
+                    <h3>5. Flex và Grid dùng khi nào</h3>
+                    <p>Flex hợp cho sắp hàng theo 1 chiều. Grid hợp cho bố cục 2 chiều.</p>
+                    <div class="code-sample">.row { display: flex; flex-direction: row; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); }</div>
+                    <p>Trong playground, đổi <code>display</code> của vùng chứa để thấy khác biệt ngay.</p>
+                </div>
+
+                <div class="theory-card">
+                    <h3>6. Cách dùng CSS nhanh</h3>
+                    <ul>
+                        <li>Xác định phần tử cần chỉnh.</li>
+                        <li>Chọn thuộc tính phù hợp.</li>
+                        <li>Đặt giá trị rõ ràng, đo được.</li>
+                        <li>Kiểm tra ảnh hưởng lên bố cục tổng thể.</li>
+                    </ul>
+                    <div class="code-sample">.box {
+  margin: 12px;
+  padding: 16px;
+  background: #ff5722;
+  color: #fff;
+}</div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    const target = document.getElementById('target-element');
+    const zone = document.getElementById('test-zone');
+    const flexGroup = document.getElementById('flex-axis-group');
+    const statusRow = document.getElementById('status-row');
+    const tabs = document.querySelectorAll('.tab-nav button');
+    const views = {
+        playground: document.getElementById('playground-view'),
+        theory: document.getElementById('theory-view'),
+    };
+
+    const defaults = {
+        width: '150px',
+        height: '150px',
+        margin: '10px',
+        padding: '15px',
+        backgroundColor: '#ff5722',
+        color: '#ffffff',
+        fontSize: '16px',
+        fontFamily: 'Arial',
+        fontWeight: 'normal',
+        fontStyle: 'normal',
+        textDecoration: 'none',
+        display: 'block',
+        zoneDisplay: 'block',
+        flexDirection: 'row',
+    };
+
+    const state = { ...defaults };
+
+    function renderStatus() {
+        statusRow.innerHTML = '';
+        const effectiveDisplay = state.zoneDisplay === 'table' ? 'table-cell' : state.display;
+        const items = [
+            ['width', state.width],
+            ['height', state.height],
+            ['margin', state.margin],
+            ['padding', state.padding],
+            ['display', effectiveDisplay],
+            ['zone', state.zoneDisplay],
+        ];
+
+        items.forEach(([label, value]) => {
+            const chip = document.createElement('span');
+            chip.className = 'status-chip';
+            chip.textContent = `${label}: ${value}`;
+            statusRow.appendChild(chip);
+        });
+    }
+
+    function syncUI() {
+        target.style.width = state.width;
+        target.style.height = state.height;
+        target.style.margin = state.margin;
+        target.style.padding = state.padding;
+        target.style.backgroundColor = state.backgroundColor;
+        target.style.color = state.color;
+        target.style.fontSize = state.fontSize;
+        target.style.fontFamily = state.fontFamily;
+        target.style.fontWeight = state.fontWeight;
+        target.style.fontStyle = state.fontStyle;
+        target.style.textDecoration = state.textDecoration;
+
+        zone.style.display = state.zoneDisplay;
+        zone.style.flexDirection = state.flexDirection;
+        zone.style.gridTemplateColumns = state.zoneDisplay.includes('grid') ? 'repeat(3, minmax(0, 1fr))' : '';
+        zone.style.justifyContent = state.zoneDisplay.includes('flex') ? 'flex-start' : '';
+        zone.style.alignItems = state.zoneDisplay.includes('flex') ? 'flex-start' : '';
+
+        if (state.zoneDisplay === 'table') {
+            target.style.display = 'table-cell';
+            document.querySelectorAll('.sibling-box').forEach(el => {
+                el.style.display = 'table-cell';
+            });
+        } else {
+            target.style.display = state.display;
+            resetTableStructure();
+        }
+
+        if (state.zoneDisplay.includes('flex')) {
+            flexGroup.style.display = 'block';
+        } else {
+            flexGroup.style.display = 'none';
+        }
+
+        renderStatus();
+    }
+
+    function switchTab(tabName, btn) {
+        Object.entries(views).forEach(([name, view]) => {
+            const active = name === tabName;
+            view.hidden = !active;
+        });
+        tabs.forEach(tab => {
+            const active = tab === btn;
+            tab.classList.toggle('active', active);
+            tab.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+    }
+
+    // Hàm thay đổi CSS trực tiếp cho Element Mục Tiêu
+    function changeCSS(property, value, btn) {
+        state[property] = value;
+        syncUI();
+        setActive(btn);
+    }
+
+    // Hàm thay đổi cấu trúc Display cho Vùng Chứa (Cha)
+    function changeZoneDisplay(displayValue, btn) {
+        state.zoneDisplay = displayValue;
+        syncUI();
+        setActive(btn);
+    }
+
+    // Hàm thay đổi trục cho Flexbox
+    function changeFlexDirection(direction, btn) {
+        state.flexDirection = direction;
+        syncUI();
+        setActive(btn);
+    }
+
+    // Hàm giả lập cấu trúc Table-row và Table-cell
+    function changeZoneLayoutRow(type, btn) {
+        state.zoneDisplay = 'table';
+        syncUI();
+        target.style.display = 'table-cell';
+        document.querySelectorAll('.sibling-box').forEach(el => {
+            el.style.display = 'table-cell';
+        });
+        renderStatus();
+    }
+
+    function resetTableStructure() {
+        document.querySelectorAll('.sibling-box').forEach(el => {
+            el.style.display = 'inline-block';
+        });
+    }
+
+    function resetPlayground(btn) {
+        Object.assign(state, defaults);
+        syncUI();
+        document.querySelectorAll('button[data-active-key]').forEach(button => {
+            if (button.dataset.default === 'true') {
+                setActive(button);
+            }
+        });
+        if (btn) {
+            btn.classList.add('active');
+            setTimeout(() => btn.classList.remove('active'), 180);
+        }
+    }
+
+    function setDemoPreset(name, btn) {
+        if (name === 'compact') {
+            state.width = '220px';
+            state.height = '120px';
+            state.margin = '6px';
+            state.padding = '10px';
+            state.backgroundColor = '#0f172a';
+            state.color = '#e2e8f0';
+            state.fontSize = '14px';
+            state.fontFamily = 'Arial';
+            state.fontWeight = 'bold';
+            state.fontStyle = 'normal';
+            state.textDecoration = 'none';
+        }
+
+        if (name === 'layout') {
+            state.width = '260px';
+            state.height = '180px';
+            state.margin = '20px';
+            state.padding = '20px';
+            state.backgroundColor = '#4caf50';
+            state.color = '#ffffff';
+            state.fontSize = '18px';
+            state.fontFamily = 'Times New Roman';
+            state.fontWeight = 'normal';
+            state.fontStyle = 'italic';
+            state.textDecoration = 'underline';
+        }
+
+        syncUI();
+        if (btn) {
+            btn.classList.add('active');
+            setTimeout(() => btn.classList.remove('active'), 180);
+        }
+    }
+
+    // Tiện ích đổi màu nút đang chọn
+    function setActive(button) {
+        const key = button.dataset.activeKey;
+        if (!key) {
+            button.classList.add('active');
+            return;
+        }
+        document.querySelectorAll(`button[data-active-key="${key}"]`).forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+    }
+
+    syncUI();
+</script>
+
+</body>
+</html>
