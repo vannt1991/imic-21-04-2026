@@ -1,5 +1,7 @@
 import "./globals.css";
 import { Inter, Space_Grotesk } from "next/font/google";
+import { CartProvider } from "@/components/cart-provider";
+import { SiteHeader } from "@/components/site-header";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -19,7 +21,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="vi" className={`${inter.variable} ${spaceGrotesk.variable}`}>
-      <body>{children}</body>
+      <body>
+        <CartProvider>
+          <SiteHeader />
+          {children}
+        </CartProvider>
+      </body>
     </html>
   );
 }
