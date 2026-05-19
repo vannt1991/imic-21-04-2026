@@ -1,71 +1,83 @@
-import { formatVnd } from "@/lib/format-vnd";
+import { db } from "@/lib/db";
 
-export const products = [
-  {
-    slug: "air-runner-basic",
-    name: "Air Runner Basic",
-    category: "Running",
-    badge: "Bestseller",
-    description: "Mẫu sneaker gọn nhẹ, phù hợp cho buổi học đầu tiên.",
-    price: 1290000,
-    originalPrice: 1490000,
-    inStock: true,
-    featured: true,
-    note: "Dễ phối đồ",
-  },
-  {
-    slug: "street-flex-pro",
-    name: "Street Flex Pro",
-    category: "Lifestyle",
-    badge: "New",
-    description: "Thiết kế nổi bật hơn, hợp với phong cách streetwear.",
-    price: 1890000,
-    originalPrice: null,
-    inStock: true,
-    featured: true,
-    note: "Phối outfit nhanh",
-  },
-  {
-    slug: "court-classic-white",
-    name: "Court Classic White",
-    category: "Classic",
-    badge: "Sale",
-    description: "Một đôi basic sạch, đơn giản, dễ dùng hằng ngày.",
-    price: 990000,
-    originalPrice: 1190000,
-    inStock: true,
-    featured: true,
-    note: "Giá dễ tiếp cận",
-  },
-  {
-    slug: "trail-guard-mid",
-    name: "Trail Guard Mid",
-    category: "Outdoor",
-    badge: "Sold out",
-    description: "Bản mid-top chắc chân cho những buổi đi bộ cuối tuần.",
-    price: 1590000,
-    originalPrice: null,
-    inStock: false,
-    featured: false,
-    note: "Hết hàng tạm thời",
-  },
-];
-
-export const featuredProducts = products
-  .filter((product) => product.featured)
-  .map((product) => ({
-    ...product,
-    priceLabel: formatVnd(product.price),
-  }));
-
-export function getProductBySlug(slug) {
-  return products.find((product) => product.slug === slug) ?? null;
+export function toProductViewModel(product) {
+  return {
+    slug: product.slug,
+    name: product.name,
+    category: product.category?.name ?? "",
+    badge: product.badge ?? (product.originalPrice ? "Sale" : "New"),
+    description: product.description,
+    price: product.price,
+    originalPrice: product.originalPrice ?? null,
+    image: product.image ?? null,
+    note: product.note ?? "",
+    inStock: product.stock > 0,
+    featured: product.featured,
+    isActive: product.isActive,
+  };
 }
 
-export function getProductSlugs() {
-  return products.map((product) => ({ slug: product.slug }));
+async function findProducts(where = {}, take) {
+  const products = await db.product.findMany({
+    where: { isActive: true, ...where },
+    include: { category: true },
+    ...(take ? { take } : {}),
+    orderBy: { createdAt: "desc" },
+  });
+
+  return products.map(toProductViewModel);
 }
 
-export function getRelatedProducts(slug, limit = 3) {
-  return products.filter((product) => product.slug !== slug).slice(0, limit);
+export async function getProducts() {
+  return findProducts();
+}
+
+export async function getFeaturedProducts(limit = 3) {
+  return findProducts({ featured: true }, limit);
+}
+
+export async function getProductBySlug(slug) {
+  if (!slug) {
+    return null;
+  }
+
+  const product = await db.product.findUnique({
+    where: { slug },
+    include: { category: true },
+  });
+
+  if (!product || !product.isActive) {
+    return null;
+  }
+
+  return toProductViewModel(product);
+}
+
+export async function getProductSlugs() {
+  const products = await db.product.findMany({
+    where: { isActive: true },
+    select: { slug: true },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return products.map(({ slug }) => ({ slug }));
+}
+
+export async function getRelatedProducts(slug, limit = 3) {
+  const currentProduct = await db.product.findUnique({
+    where: { slug },
+    select: { categoryId: true },
+  });
+
+  if (!currentProduct) {
+    return [];
+  }
+
+  return findProducts(
+    {
+      slug: { not: slug },
+      categoryId: currentProduct.categoryId,
+    },
+    limit,
+  );
 }

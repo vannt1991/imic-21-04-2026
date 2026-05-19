@@ -8,13 +8,13 @@ import {
 } from "@/lib/products";
 import { formatVnd } from "@/lib/format-vnd";
 
-export function generateStaticParams() {
-  return getProductSlugs();
+export async function generateStaticParams() {
+  return await getProductSlugs();
 }
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     return {
@@ -31,13 +31,13 @@ export async function generateMetadata({ params }) {
 
 export default async function ProductDetailPage({ params }) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
-  const relatedProducts = getRelatedProducts(product.slug);
+  const relatedProducts = await getRelatedProducts(product.slug);
   const isSale = Boolean(product.originalPrice);
 
   return (

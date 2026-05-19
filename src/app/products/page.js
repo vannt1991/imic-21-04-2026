@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
-import { products } from "@/lib/products";
+import { getProducts } from "@/lib/products";
 
 export const metadata = {
   title: "MiniShop | Tất cả sản phẩm",
   description: "Danh sách sản phẩm tĩnh của MiniShop.",
 };
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const products = await getProducts();
+
   return (
     <main className="products-page">
       <section className="products-page__hero">
@@ -15,8 +17,8 @@ export default function ProductsPage() {
           <p className="products-page__eyebrow">Product listing</p>
           <h1>Tất cả sản phẩm</h1>
           <p className="products-page__description">
-            Trang này dùng cùng data với homepage để học cách render list bằng
-            `map()` và component tái sử dụng.
+            Trang này đọc trực tiếp từ database để học cách tách data layer
+            khỏi UI layer.
           </p>
 
           <Link href="/" className="button button--secondary">
