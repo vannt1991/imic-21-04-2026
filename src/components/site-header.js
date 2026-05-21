@@ -11,6 +11,7 @@ export function SiteHeader() {
 
         <nav className="site-nav" aria-label="Primary">
           <Link href="/products">Tất cả sản phẩm</Link>
+          <Link href="/admin/products">Admin</Link>
           <CartStatusLink />
           <Link href="/#featured">Sản phẩm nổi bật</Link>
           <Link href="/#story">Câu chuyện</Link>
