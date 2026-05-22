@@ -6,6 +6,7 @@ import {
   parseStoredCart,
   removeCartItem,
   serializeCart,
+  toCheckoutItems,
   updateCartItemQuantity,
 } from "../../src/lib/cart.js";
 
@@ -165,6 +166,75 @@ describe("cart helpers", () => {
     ]);
   });
 
+  it("trims stored slugs and drops blank slug entries", () => {
+    expect(
+      parseStoredCart(
+        JSON.stringify([
+          {
+            slug: "  air-runner-basic  ",
+            name: "Air Runner Basic",
+            price: 1290000,
+            badge: "Bestseller",
+            quantity: 2,
+          },
+          {
+            slug: "   ",
+            name: "Blank Slug",
+            price: 990000,
+            badge: "Sale",
+            quantity: 1,
+          },
+        ]),
+      ),
+    ).toEqual([
+      {
+        slug: "air-runner-basic",
+        name: "Air Runner Basic",
+        price: 1290000,
+        badge: "Bestseller",
+        quantity: 2,
+      },
+    ]);
+  });
+
+  it("merges duplicate stored entries by normalized slug", () => {
+    expect(
+      parseStoredCart(
+        JSON.stringify([
+          {
+            slug: "  air-runner-basic  ",
+            name: "Air Runner Basic",
+            price: 1290000,
+            badge: "Bestseller",
+            quantity: 2,
+          },
+          {
+            slug: "air-runner-basic",
+            name: "Different Name Should Not Replace",
+            price: 1390000,
+            badge: "New",
+            quantity: 0,
+          },
+          {
+            slug: "air-runner-basic ",
+            name: "Ignored Duplicate Fields",
+            price: 1590000,
+            badge: 42,
+            quantity: 3.8,
+          },
+        ]),
+      ),
+    ).toEqual([
+      {
+        slug: "air-runner-basic",
+        name: "Air Runner Basic",
+        price: 1290000,
+        badge: "Bestseller",
+        quantity: 6,
+      },
+    ]);
+  });
+
   it("serializes and restores a valid stored cart", () => {
     const cart = [
       {
@@ -177,5 +247,42 @@ describe("cart helpers", () => {
     ];
 
     expect(parseStoredCart(serializeCart(cart))).toEqual(cart);
+  });
+
+  it("returns minimal checkout items with trimmed slugs and integer quantities", () => {
+    expect(
+      toCheckoutItems([
+        {
+          slug: "  air-runner-basic  ",
+          name: "Air Runner Basic",
+          price: 1290000,
+          badge: "Bestseller",
+          quantity: 2,
+        },
+        {
+          slug: " street-flex-pro ",
+          quantity: 1,
+          extra: true,
+        },
+      ]),
+    ).toEqual([
+      { slug: "air-runner-basic", quantity: 2 },
+      { slug: "street-flex-pro", quantity: 1 },
+    ]);
+  });
+
+  it("skips checkout items with blank slugs or invalid quantities", () => {
+    expect(
+      toCheckoutItems([
+        { slug: "   ", quantity: 1 },
+        { slug: "air-runner-basic", quantity: 0 },
+        { slug: "air-runner-basic", quantity: 2.9 },
+        { slug: "street-flex-pro", quantity: -1 },
+        { slug: "trail-guard-mid", quantity: Number.NaN },
+        { slug: "urban-lite", quantity: Number.POSITIVE_INFINITY },
+        { slug: "coast-runner", quantity: "3" },
+        null,
+      ]),
+    ).toEqual([]);
   });
 });

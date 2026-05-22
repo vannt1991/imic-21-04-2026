@@ -144,7 +144,7 @@ export function CartPageContent() {
 
           <aside className="cart-summary">
             <p className="cart-summary__eyebrow">Tóm tắt đơn hàng</p>
-            <h2>Tổng frontend của buổi 4</h2>
+            <h2>Tổng frontend của buổi 8</h2>
 
             <div className="cart-summary__row">
               <span>Số lượng</span>
@@ -162,8 +162,13 @@ export function CartPageContent() {
             </div>
 
             <p className="cart-summary__note">
-              Chưa có shipping fee hay checkout backend ở milestone này.
+              Buổi 8 đã nối cart sang checkout và POST đơn hàng, chưa tính
+              shipping fee trong milestone này.
             </p>
+
+            <Link href="/checkout" className="button button--primary">
+              Tiến hành checkout
+            </Link>
 
             <Link href="/products" className="button button--secondary">
               Tiếp tục mua hàng
