@@ -1,8 +1,8 @@
 # MiniShop Course Design
 
 Date: 2026-05-11
-Status: Draft
-Scope: 10-buổi course project cho Next.js App Router, giữ JavaScript, build dần một e-commerce mini-shop full-stack.
+Status: Updated after core implementation review
+Scope: 10-buổi core course project cho Next.js App Router, giữ JavaScript, build dần một e-commerce mini-shop full-stack, kèm 2 buổi nâng cao optional.
 
 ## 1. Mục tiêu
 
@@ -10,7 +10,7 @@ Xây một project học React + Next.js theo kiểu "build while learning":
 
 - Có storefront: landing, listing, detail, cart, checkout, order success.
 - Có backend: database, REST API, order flow, admin CRUD, auth/protect route.
-- Có lộ trình 10 buổi, mỗi buổi là 1 milestone độc lập.
+- Có lộ trình 10 buổi core, mỗi buổi là 1 milestone độc lập, cộng thêm 2 buổi nâng cao optional.
 - Có tài liệu giảng dạy đi kèm để dùng trực tiếp khi dạy hoặc tự học.
 
 Project đích: `MiniShop` - cửa hàng sneaker demo. Có thể đổi sang áo thun, mỹ phẩm, hoặc đồ công nghệ nhưng cấu trúc giữ nguyên.
@@ -21,7 +21,7 @@ Project đích: `MiniShop` - cửa hàng sneaker demo. Có thể đổi sang áo
 - Bám Next.js App Router.
 - Ưu tiên chạy được trước, tối ưu sau.
 - Mỗi milestone phải có output nhìn thấy được trong browser.
-- Không mở rộng scope ra ngoài requirement gốc nếu chưa cần.
+- Không mở rộng scope ra ngoài requirement gốc của core track nếu chưa cần.
 
 ## 3. Kiến trúc học tập
 
@@ -66,16 +66,23 @@ Lý do:
 
 ## 5. Cấu trúc cuối khóa
 
-Target structure:
+Core target structure:
 
 - `src/app`
 - `src/components`
 - `src/lib`
-- `src/types`
 - `prisma`
 - `docs`
 
+Advanced additions:
+
+- auth/session tables hoặc auth provider config tương ứng giải pháp được chọn
+- E2E/CI config và workflow files
+- docs deploy/migration/checklists production-aware
+
 Route map cuối khóa:
+
+Core routes:
 
 - `/` landing
 - `/products` listing
@@ -90,12 +97,17 @@ Route map cuối khóa:
 - `/admin/products/[id]/edit`
 - `/admin/orders`
 - `/admin/orders/[id]`
-- `/admin/categories`
 - `/api/products`
 - `/api/products/[id]`
 - `/api/categories`
 - `/api/orders`
-- `/api/orders/[id]`
+
+Advanced routes / surfaces:
+
+- `/admin/categories`
+- `/register` hoặc auth screen tương ứng giải pháp được chọn
+- `/api/orders/[id]` nếu buổi nâng cao chọn dạy order detail/update bằng REST thay vì chỉ qua server action
+- CI workflow và E2E specs cho các flow quan trọng
 
 ## 6. Teaching design
 
@@ -199,6 +211,17 @@ export default function HomePage() {
 - Dừng lại ở điểm: buổi này chưa cần dữ liệu động, mục tiêu là học cách ghép UI thành trang hoàn chỉnh.
 - Nếu học viên hỏi “sao chưa dùng state”, giải thích: chưa cần, vì đây là nền tảng render tĩnh.
 
+### Quick check
+
+- Component khác gì so với một khối HTML copy-paste?
+- `layout.js` và `page.js` mỗi file chịu trách nhiệm phần nào?
+- Vì sao buổi 1 chưa cần state hay API?
+
+### Misconception traps
+
+- Dễ nhầm App Router chỉ là “đổi tên folder”, trong khi điểm chính là cấu trúc route + layout + data flow.
+- Dễ nghĩ landing page tĩnh là “đơn giản nên không quan trọng”, nhưng đây là nơi luyện composition và chia section.
+
 ## 8. Milestone 2 - Buổi 2: Product Listing Tĩnh
 
 ### Mục tiêu
@@ -291,6 +314,17 @@ function formatVnd(value) {
 - Chốt bằng thông điệp: khi list tăng từ 3 lên 30 sản phẩm, cách này vẫn giữ code gọn.
 - Nếu lớp yếu, nhắc lại format tiền là logic helper chứ không nên viết lặp trong JSX.
 
+### Quick check
+
+- Vì sao `map()` phù hợp hơn viết tay nhiều card giống nhau?
+- Khi nào product nên hiện badge sale?
+- Logic format tiền nên đặt trong JSX hay helper?
+
+### Misconception traps
+
+- Dễ nhầm props cho phép child tự ý sửa data của parent; cần nhấn mạnh data chảy một chiều.
+- Dễ nghĩ `map()` chỉ để “lặp UI”, trong khi mục tiêu là render từ data source dùng chung.
+
 ## 9. Milestone 3 - Buổi 3: Dynamic Route + Product Detail
 
 ### Mục tiêu
@@ -373,6 +407,17 @@ export async function generateMetadata({ params }) {
 - `notFound()` nên được nói như một nhánh kết thúc hợp lệ, không phải lỗi bất thường.
 - Chốt lý do metadata động: title đúng tên sản phẩm giúp preview link và SEO rõ hơn.
 - Nếu học viên hỏi “có cần DB mới làm được không”, trả lời: chưa cần, buổi này vẫn có thể lấy mock data để học routing.
+
+### Quick check
+
+- `params.slug` lấy từ đâu khi người dùng mở `/products/[slug]`?
+- Khi nào nên gọi `notFound()`?
+- Vì sao product detail cần metadata động theo sản phẩm?
+
+### Misconception traps
+
+- Dễ nhầm dynamic route phải dùng database thật; thực tế buổi này có thể học bằng mock data.
+- Dễ xem `notFound()` như exception bất thường, thay vì một nhánh điều hướng hợp lệ của flow.
 
 ## 10. Milestone 4 - Buổi 4: Cart Frontend
 
@@ -458,6 +503,17 @@ setItems((current) => [...current, newItem]);
 - Với localStorage, nói đây là lưu tạm ở browser, dùng cho học chứ chưa phải source of truth cuối cùng.
 - Chốt: cart buổi này là bản frontend, chưa có backend checkout.
 
+### Quick check
+
+- Vì sao cart buổi này phải chạy ở Client Component?
+- `localStorage` giải quyết vấn đề gì sau khi reload?
+- Context giúp tránh vấn đề nào trong cây component?
+
+### Misconception traps
+
+- Dễ nghĩ localStorage là nguồn dữ liệu thật của hệ thống; cần nhấn mạnh đây chỉ là lưu tạm phía browser.
+- Dễ lạm dụng `useEffect` để tính toán UI, trong khi vai trò chính của nó là side effect.
+
 ## 11. Milestone 5 - Buổi 5: Database + Prisma
 
 ### Mục tiêu
@@ -539,6 +595,17 @@ await db.product.createMany({ data: productsSeed });
 - Tách rõ migration và seed: migration đổi cấu trúc, seed đổ dữ liệu mẫu.
 - Khi demo Prisma Studio, nhấn mạnh đây là cách nhìn DB gần giống bảng tính để học viên dễ hình dung.
 - Chốt: từ buổi này trở đi, dữ liệu không còn nằm trong file JS tĩnh nữa.
+
+### Quick check
+
+- Entity khác relation ở điểm nào?
+- Migration và seed giải quyết hai việc khác nhau ra sao?
+- Vì sao cần `db` singleton khi dùng Prisma?
+
+### Misconception traps
+
+- Dễ nhầm seed là một phần của schema; thực tế seed chỉ là data mẫu, không định nghĩa cấu trúc DB.
+- Dễ nghĩ Prisma thay thế hoàn toàn tư duy database; cần nhấn mạnh model quan hệ vẫn là gốc.
 
 ## 12. Milestone 6 - Buổi 6: REST API
 
@@ -622,6 +689,17 @@ const payload = schema.parse(await request.json());
 - Khi nói validation, nhấn mạnh: sai input phải bị chặn trước khi đụng DB.
 - Cho học viên thấy 1 error JSON chuẩn để hiểu vì sao frontend dễ xử lý hơn khi API thống nhất format.
 - Chốt: route handler là cách Next cho phép viết backend ngay trong app.
+
+### Quick check
+
+- Vì sao API phải validate input trước khi ghi DB?
+- `201` khác `200` ở ngữ cảnh nào?
+- Vì sao error JSON nên có format nhất quán?
+
+### Misconception traps
+
+- Dễ nghĩ route handler chỉ là “file fetch dữ liệu”, trong khi nó chính là trust boundary của app.
+- Dễ để frontend tự tin gửi gì cũng được; cần chốt rằng server không được tin input từ client.
 
 ## 13. Milestone 7 - Buổi 7: Admin Product CRUD
 
@@ -707,6 +785,17 @@ redirect("/admin/products");
 - Khi demo CRUD, liên tục nhắc: thay đổi ở admin phải phản ánh ngay ở listing.
 - Nếu học viên lẫn lộn, nói rõ đây chưa phải auth thật, chỉ là tầng quản trị dữ liệu.
 
+### Quick check
+
+- Server Action khác API call thủ công ở điểm nào trong bài này?
+- Vì sao cần `revalidatePath()` sau mutation?
+- Khi nào nên `redirect()` sau khi lưu form?
+
+### Misconception traps
+
+- Dễ nghĩ submit form server action thì không còn cần validate; thực tế mutation nào cũng cần guard/validate.
+- Dễ quên invalidation, dẫn tới cảm giác “DB đã đổi nhưng UI chưa đổi”.
+
 ## 14. Milestone 8 - Buổi 8: Checkout + Order
 
 ### Mục tiêu
@@ -790,6 +879,17 @@ await tx.product.update({
 - Nếu học viên hỏi “có thể tạo order từ cart local không”, trả lời là có payload, nhưng total và stock vẫn phải kiểm tra ở server.
 - Chốt: đây là buổi biến app từ “xem hàng” thành “bán hàng”.
 
+### Quick check
+
+- Vì sao total phải tính ở server thay vì lấy từ client?
+- Transaction bảo vệ app khỏi kiểu lỗi nào?
+- Stock nên bị trừ ở bước nào của order flow?
+
+### Misconception traps
+
+- Dễ nghĩ client gửi tổng tiền là đủ; cần nhấn mạnh client chỉ gửi intent, không phải source of truth.
+- Dễ bỏ qua case hết hàng giữa lúc user mở trang và lúc submit checkout.
+
 ## 15. Milestone 9 - Buổi 9: Auth + Protected Admin + Orders
 
 ### Mục tiêu
@@ -871,6 +971,17 @@ await db.order.update({
 - Dùng `redirect('/login')` như ví dụ trực quan cho luồng bảo vệ route.
 - Nếu học viên chưa có provider thật, dùng auth stub để họ tập trung vào kiến trúc quyền trước.
 - Chốt: đây là buổi đưa “cửa admin” vào trạng thái có kiểm soát.
+
+### Quick check
+
+- Authentication khác authorization thế nào?
+- Vì sao chỉ hide nút admin là chưa đủ?
+- Guard nên đặt ở đâu để chặn trước khi render?
+
+### Misconception traps
+
+- Dễ nhầm “không thấy link admin” với “không truy cập được admin”.
+- Dễ xem auth stub như giải pháp production, trong khi mục tiêu ở core chỉ là học quyền truy cập và redirect flow.
 
 ## 16. Milestone 10 - Buổi 10: Search, Filter, SEO, Deploy
 
@@ -957,9 +1068,202 @@ export default function Loading() {
 - Dùng checklist deploy để tổng kết: build, data, UI states, README, production DB.
 - Chốt buổi này như phần “đóng gói sản phẩm”, không chỉ là thêm tính năng.
 
-## 17. Data model cuối khóa
+### Quick check
 
-Entity chính:
+- Vì sao URL nên là source of truth cho search/filter/pagination?
+- Empty state khác error state ở điểm nào?
+- Trước khi deploy cần check tối thiểu những gì ngoài chuyện “app chạy được”?
+
+### Misconception traps
+
+- Dễ gộp loading, error, empty state thành cùng một kiểu fallback text; cần tách rõ nguyên nhân và hành vi.
+- Dễ nghĩ build pass là đủ để deploy, trong khi env, data, route guard và SEO metadata vẫn có thể sai.
+
+## 17. Milestone 11 - Buổi nâng cao 1: Real Auth + Admin Categories
+
+### Mục tiêu
+
+Thay auth stub của core bằng auth thật mức course-demo-production và hoàn tất quản lý category trong admin.
+
+### Lý thuyết
+
+- Session-based auth: server xác định user hiện tại từ session thay vì cookie role giả lập.
+- Password hashing: không lưu plain-text password trong database.
+- Role lookup từ DB: quyền được quyết định từ dữ liệu user thật.
+- Auth guard cho page, server action, API: cùng một nguyên tắc nhưng nhiều trust boundary.
+- Category CRUD + relation safety: không để thao tác category phá integrity của product hiện có.
+
+### Code demo gắn với lý thuyết
+
+- đọc user từ session:
+
+```js
+const session = await auth();
+const user = session?.user ?? null;
+```
+
+- hash password trước khi lưu:
+
+```js
+const passwordHash = await hashPassword(password);
+```
+
+- chặn action nếu không phải admin:
+
+```js
+if (user.role !== "ADMIN") {
+  throw new Error("Forbidden");
+}
+```
+
+### Demo
+
+- Đổi auth stub sang auth thật theo giải pháp đã chọn.
+- Tạo login/logout flow với session rõ ràng.
+- Protect lại admin page, action, API bằng user thật.
+- Tạo `admin/categories` CRUD.
+
+### Thực hành
+
+- Tạo create/edit/delete category.
+- Chặn xóa category đang còn product nếu chưa xử lý relation.
+- Hiển thị lỗi quyền truy cập rõ ràng ở UI.
+
+### Bài tập
+
+- Thêm register flow tối thiểu nếu còn thời gian.
+- Thêm audit field đơn giản như `createdBy` hoặc `updatedBy`.
+
+### Tiêu chí hoàn thành
+
+- Đăng nhập/đăng xuất hoạt động với user thật.
+- Admin route/action không còn dựa vào role cookie stub.
+- Admin quản lý category được mà không phá integrity dữ liệu.
+
+### Lesson outline
+
+1. Warm-up: hỏi “role trong cookie khác gì so với user thật trong database?”
+2. Concept 1: session, password hash, role lookup.
+3. Concept 2: protect page, action, API ở nhiều trust boundary.
+4. Concept 3: category CRUD và relation safety.
+5. Demo: login flow, session auth, `admin/categories`.
+6. Checkpoint: thử truy cập admin bằng user không đủ quyền.
+7. Practice: create/edit/delete category và xử lý case category đang được dùng.
+8. Review: chốt khác biệt giữa auth demo của core và auth thật của advanced.
+
+### Speaker notes
+
+- Nhấn mạnh auth thật không chỉ là “set cookie khác tên”, mà là đổi source of truth về user/session.
+- Với password, phải dạy rõ hash là yêu cầu tối thiểu, không bao giờ lưu plain-text.
+- Khi protect action/API, nhấn mạnh user có thể bypass UI nên server vẫn phải check lại.
+- Category CRUD là chỗ tốt để dạy integrity vì relation product-category rất trực quan.
+
+### Quick check
+
+- Vì sao role không nên chỉ nằm trong cookie tự set ở client?
+- Hash password giải quyết rủi ro gì?
+- Vì sao phải protect cả page lẫn action/API?
+
+### Misconception traps
+
+- Dễ nghĩ login page xong là đã “có auth”, trong khi guard thật nằm ở server-side checks.
+- Dễ cho phép xóa category tùy ý mà quên product đang phụ thuộc vào category đó.
+
+## 18. Milestone 12 - Buổi nâng cao 2: Production DB, Deploy, CI, E2E
+
+### Mục tiêu
+
+Đưa app từ mức demo/local sang mức deployable có guardrails: database production-aware, checklist deploy rõ, CI cơ bản, và E2E smoke tests.
+
+### Lý thuyết
+
+- SQLite local vs PostgreSQL production: khác nhau ở persistence, concurrency, môi trường deploy.
+- Migration flow production: đổi schema phải có quy trình rõ, không shell-out như local demo.
+- CI pipeline: test, lint, build là lớp tự động kiểm tra tối thiểu trước merge/deploy.
+- E2E smoke tests: xác nhận các flow quan trọng vẫn chạy xuyên suốt trên app thật.
+- Deploy checklist: env, database, seed strategy, auth, SEO, route verification.
+
+### Code demo gắn với lý thuyết
+
+- workflow CI tối thiểu:
+
+```yml
+- run: npm run test
+- run: npm run lint
+- run: npm run build
+```
+
+- E2E smoke test:
+
+```js
+await page.goto("/login");
+await page.goto("/admin");
+```
+
+- env guard production:
+
+```js
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is required");
+}
+```
+
+### Demo
+
+- Viết checklist deploy production-aware.
+- Thiết lập CI chạy test/lint/build.
+- Thêm E2E smoke test cho login, admin guard, catalog, checkout happy path.
+- Chuẩn hóa notes cho Postgres production.
+
+### Thực hành
+
+- Chuyển README/checklists sang semantics production rõ hơn.
+- Tạo smoke test tối thiểu cho route quan trọng.
+- Verify env quan trọng như `DATABASE_URL` và `NEXT_PUBLIC_SITE_URL`.
+
+### Bài tập
+
+- Deploy thử lên môi trường thật.
+- Mở rộng E2E cho case lỗi checkout hoặc unauthorized admin access.
+
+### Tiêu chí hoàn thành
+
+- Có CI cơ bản chạy được `test`, `lint`, `build`.
+- Có E2E smoke cho các flow quan trọng nhất.
+- Tài liệu deploy phân biệt rõ local demo và production.
+
+### Lesson outline
+
+1. Warm-up: hỏi “app build pass local đã đủ gọi là production-ready chưa?”
+2. Concept 1: SQLite local vs Postgres production.
+3. Concept 2: migration flow và env guard.
+4. Concept 3: CI và E2E smoke tests.
+5. Demo: CI workflow, smoke test, deploy checklist.
+6. Checkpoint: thử tìm chỗ nào app vẫn còn giả định local/demo.
+7. Practice: thêm route smoke tests và rà lại README.
+8. Review: chốt khoảng cách giữa “course app chạy được” và “app deploy có guardrails”.
+
+### Speaker notes
+
+- Nhấn mạnh production readiness là một phổ, không phải một nút bật/tắt.
+- Khi nói database production, cần tách rất rõ chuyện “đổi connection string” với “đổi cả quy trình migrate”.
+- CI không thay thế review hay QA, nhưng nó chặn được lỗi cơ bản rất rẻ.
+- E2E smoke nên giữ ít nhưng đánh trúng flow sống còn của app.
+
+### Quick check
+
+- Vì sao SQLite local không tự động là lựa chọn tốt cho production?
+- CI nên chạy tối thiểu những lệnh nào?
+- E2E smoke test khác unit test ở điểm nào?
+
+### Misconception traps
+
+- Dễ nghĩ chỉ cần đổi `DATABASE_URL` là xong câu chuyện production DB.
+- Dễ viết quá nhiều E2E nặng nề ngay từ đầu thay vì giữ một tập smoke nhỏ nhưng đáng tin.
+
+## 19. Data model cuối khóa
+
+Core entities:
 
 - `User`
 - `Category`
@@ -967,14 +1271,19 @@ Entity chính:
 - `Order`
 - `OrderItem`
 
-Quan hệ:
+Core relations:
 
 - `Category` có nhiều `Product`.
 - `Order` có nhiều `OrderItem`.
 - `OrderItem` tham chiếu `Product`.
 - `User` có thể liên kết `Order`.
 
-## 18. Reusable helpers
+Advanced additions nếu đi tiếp buổi 11-12:
+
+- Session/account tables hoặc schema tương ứng auth solution được chọn.
+- Audit fields cơ bản như `createdBy`, `updatedBy` nếu muốn tăng độ rõ của admin mutations.
+
+## 20. Reusable helpers
 
 Helpers cần có:
 
@@ -982,10 +1291,12 @@ Helpers cần có:
 - `slug` helper nếu cần tạo slug thủ công.
 - `db` client singleton.
 - `products` helper lấy theo slug/id.
-- `auth` helper cho admin guard.
-- `validation` schema cho product/order.
+- `product-search` helper cho normalize search params và build filter/pagination href.
+- `seo` helper cho canonical URL, sitemap, robots.
+- `auth` helper cho admin guard ở core và session/user lookup ở advanced.
+- `validation` schema cho product/order/category/auth payload.
 
-## 19. Flow diagram
+## 21. Flow diagram
 
 Luồng hoạt động chính của MiniShop:
 
@@ -1022,7 +1333,7 @@ Diễn giải ngắn:
 - DB là nguồn dữ liệu gốc cho product, order, category, user.
 - Checkout và admin mutation đều phải qua server trước khi phản hồi về UI.
 
-## 20. Teaching notes
+## 22. Teaching notes
 
 Điểm nhấn khi dạy:
 
@@ -1032,8 +1343,10 @@ Diễn giải ngắn:
 - Với checkout, nhấn mạnh “tính total ở server”.
 - Với admin, nhấn mạnh “mutation cần revalidate”.
 - Với auth, nhấn mạnh “admin route không được chỉ dựa vào UI hide”.
+- Với advanced auth, nhấn mạnh khác biệt giữa demo guard và user/session thật.
+- Với advanced deploy, nhấn mạnh chênh lệch giữa local demo convenience và production discipline.
 
-## 21. Delivery layer
+## 23. Delivery layer
 
 Mỗi buổi nên được trình bày theo format cố định để dễ dạy và dễ học:
 
@@ -1045,22 +1358,25 @@ Mỗi buổi nên được trình bày theo format cố định để dễ dạy
 6. Practice: giao bài ngắn, đủ để tự làm lại được.
 7. Review: chốt lại bằng checklist và lỗi thường gặp.
 
-Mẫu quick check cho mỗi buổi:
+Quick check và misconception traps nên nằm ngay trong từng milestone, không dồn thành phụ lục cuối file nữa.
 
-- Buổi 1: Component là gì? `layout.js` khác `page.js` thế nào?
-- Buổi 2: Vì sao dùng `map()` để render list? Khi nào hiển thị badge sale?
-- Buổi 3: `params.slug` lấy từ đâu? Khi nào cần `notFound()`?
-- Buổi 4: Vì sao cart không nên chỉ lưu trong state thường? `localStorage` giải quyết gì?
-- Buổi 5: Relation khác entity ở điểm nào? Seed dùng khi nào?
-- Buổi 6: Vì sao API phải validate trước khi ghi DB? Status code 404 dùng khi nào?
-- Buổi 7: Server Action khác API call truyền thống ở điểm nào? Vì sao cần `revalidatePath()`?
-- Buổi 8: Tại sao total phải tính ở server? Transaction giải quyết lỗi gì?
-- Buổi 9: Authentication khác authorization thế nào? Vì sao không được chỉ hide nút admin?
-- Buổi 10: Search params dùng để làm gì? Empty state khác error state ra sao?
+## 24. Reality check và production caveats
 
-## 22. Implementation backlog
+Core track cố ý dừng ở mức “course app chạy tốt và đủ dạy”:
 
-Backlog theo milestone:
+- Cart vẫn có thể dựa vào `localStorage` và không đồng bộ đa thiết bị.
+- Auth ở core có thể vẫn là demo stub để dạy access control trước khi dạy auth thật.
+- SQLite phù hợp local/demo hơn production nghiêm túc nhiều instance.
+- Buổi 10 nói về deploy readiness cơ bản, không đồng nghĩa app đã production-hardened.
+
+Advanced track tồn tại để lấp đúng các khoảng trống đó:
+
+- Buổi 11 xử lý auth thật và category management.
+- Buổi 12 xử lý production DB mindset, CI, E2E, deploy guardrails.
+
+## 25. Implementation backlog
+
+Core backlog:
 
 1. Milestone 1: cleanup shell + landing.
 2. Milestone 2: product data + card + listing.
@@ -1071,13 +1387,33 @@ Backlog theo milestone:
 7. Milestone 7: admin CRUD + server actions.
 8. Milestone 8: checkout + order flow + transaction.
 9. Milestone 9: auth guard + order admin.
-10. Milestone 10: filter/search/SEO/deploy.
+10. Milestone 10: filter/search/SEO/deploy baseline.
 
-## 23. Acceptance criteria cho spec
+Advanced backlog:
+
+11. Milestone 11: real auth + admin categories.
+12. Milestone 12: production DB/deploy + CI + E2E.
+
+## 26. Acceptance criteria cho spec
 
 Spec này đạt nếu:
 
-- Chia đúng 10 milestone, mỗi milestone tương ứng 1 buổi.
-- Có cả phần kỹ thuật lẫn phần giảng dạy.
+- Giữ rõ 2 tầng phạm vi: `10 buổi core` và `2 buổi nâng cao optional`.
+- Có cả phần kỹ thuật lẫn phần giảng dạy cho từng milestone.
 - Không ép TypeScript.
-- Có đủ route, data model, API, và flow giảng dạy để bắt đầu lập plan triển khai.
+- Route map, data model, helper map, và teaching flow bám sát repo hiện tại hơn là hứa feature chưa tồn tại trong core.
+- Mỗi milestone có `Lesson outline`, `Speaker notes`, `Quick check`, và `Misconception traps`.
+
+Core track được xem là pass nếu:
+
+- Hoàn thành flow chính: landing, catalog, detail, cart, checkout, order success, admin product/order, search/filter/SEO baseline.
+- App vượt được `test`, `lint`, `build`.
+- README/local setup đủ để người học chạy lại project và demo flow chính.
+
+Advanced track được xem là pass nếu:
+
+- Auth không còn dựa trên cookie role stub mà dựa trên user/session thật.
+- Có admin category management với relation safety rõ ràng.
+- Có CI chạy ít nhất `test`, `lint`, `build`.
+- Có E2E smoke tests cho các flow quan trọng.
+- Có tài liệu production phân biệt rõ local demo và deploy thật.
