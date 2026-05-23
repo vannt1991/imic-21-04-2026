@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { handleProductRouteError, jsonError } from "@/lib/api-response";
+import { requireAdminApiUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import {
   originalPriceInvariantMessage,
@@ -48,6 +49,12 @@ export async function GET(_request, { params }) {
 
 export async function PATCH(request, { params }) {
   try {
+    const user = await requireAdminApiUser();
+
+    if (user instanceof Response) {
+      return user;
+    }
+
     const id = await getRouteId(params);
 
     if (!id) {
@@ -110,6 +117,12 @@ export async function PATCH(request, { params }) {
 
 export async function DELETE(_request, { params }) {
   try {
+    const user = await requireAdminApiUser();
+
+    if (user instanceof Response) {
+      return user;
+    }
+
     const id = await getRouteId(params);
 
     if (!id) {

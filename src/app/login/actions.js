@@ -1,54 +1,78 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import {
-  AUTH_COOKIE_NAME,
+  clearAuthSession,
   ROLE_ADMIN,
-  ROLE_CUSTOMER,
   sanitizeNextPath,
+  setAuthSession,
 } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { verifyPassword } from "@/lib/passwords";
 
-const authCookieOptions = Object.freeze({
-  httpOnly: true,
-  sameSite: "lax",
-  path: "/",
-});
+function getTrimmedValue(formData, fieldName) {
+  const value = formData.get(fieldName);
+  return typeof value === "string" ? value.trim() : "";
+}
 
-function readNextPath(formData, fallbackPath) {
-  const rawValue = formData?.get("next");
-  if (typeof rawValue !== "string") {
-    return sanitizeNextPath(fallbackPath);
+function buildLoginUrl({ error, nextPath, email }) {
+  const searchParams = new URLSearchParams({
+    error,
+    next: nextPath,
+  });
+
+  if (email) {
+    searchParams.set("email", email);
   }
 
-  const trimmedPath = rawValue.trim();
-  const sanitizedPath = sanitizeNextPath(rawValue);
+  return `/login?${searchParams.toString()}`;
+}
 
-  if (sanitizedPath !== trimmedPath) {
-    return fallbackPath;
+function resolvePostLoginPath(user, nextPath) {
+  if (user.role !== ROLE_ADMIN && nextPath.startsWith("/admin")) {
+    return "/";
   }
 
-  return sanitizedPath;
+  return nextPath;
 }
 
-async function loginWithRole(role, formData) {
-  const cookieStore = await cookies();
+export async function loginAction(formData) {
+  const email = getTrimmedValue(formData, "email").toLowerCase();
+  const password = getTrimmedValue(formData, "password");
+  const nextPath = sanitizeNextPath(getTrimmedValue(formData, "next") || "/admin");
 
-  cookieStore.set(AUTH_COOKIE_NAME, role, authCookieOptions);
-  redirect(readNextPath(formData, "/admin"));
-}
+  const user = await db.user.findUnique({
+    where: { email },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      passwordHash: true,
+    },
+  });
 
-export async function loginAsAdminAction(formData) {
-  await loginWithRole(ROLE_ADMIN, formData);
-}
+  const isValid =
+    !!user?.passwordHash &&
+    password.length > 0 &&
+    (await verifyPassword(password, user.passwordHash));
 
-export async function loginAsCustomerAction(formData) {
-  await loginWithRole(ROLE_CUSTOMER, formData);
+  if (!isValid) {
+    return redirect(
+      buildLoginUrl({
+        error: "Email hoặc mật khẩu không đúng.",
+        nextPath,
+        email,
+      }),
+    );
+  }
+
+  await setAuthSession(user.id);
+  return redirect(resolvePostLoginPath(user, nextPath));
 }
 
 export async function logoutAction(formData) {
-  const cookieStore = await cookies();
+  const nextPath = sanitizeNextPath(getTrimmedValue(formData, "next") || "/");
 
-  cookieStore.delete(AUTH_COOKIE_NAME);
-  redirect(readNextPath(formData, "/"));
+  await clearAuthSession();
+  return redirect(nextPath === "/admin" ? "/" : nextPath);
 }

@@ -17,10 +17,19 @@ const { db } = vi.hoisted(() => ({
   },
 }));
 
+const { requireAdminApiUser } = vi.hoisted(() => ({
+  requireAdminApiUser: vi.fn(),
+}));
+
 vi.mock("@/lib/db", () => ({
   db,
 }));
 
+vi.mock("@/lib/auth", () => ({
+  requireAdminApiUser,
+}));
+
+import { requireAdminApiUser as requireAdminApiUserMock } from "@/lib/auth";
 import { GET as getCategories } from "@/app/api/categories/route";
 import { GET as getProduct, PATCH as patchProduct, DELETE as deleteProduct } from "@/app/api/products/[id]/route";
 import { GET as getProducts, POST as createProduct } from "@/app/api/products/route";
@@ -64,6 +73,7 @@ async function readJson(response) {
 describe("app api routes", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    requireAdminApiUser.mockResolvedValue({ id: "user_admin", role: "ADMIN" });
   });
 
   it("GET /api/categories returns category list shape", async () => {
@@ -108,6 +118,38 @@ describe("app api routes", () => {
         ]),
       },
     });
+    expect(db.category.findUnique).not.toHaveBeenCalled();
+    expect(db.product.create).not.toHaveBeenCalled();
+  });
+
+  it("POST /api/products returns 401 for anonymous requests", async () => {
+    requireAdminApiUser.mockResolvedValue(
+      Response.json(
+        { error: { message: "Authentication required." } },
+        { status: 401 },
+      ),
+    );
+
+    const response = await createProduct(
+      new Request("http://localhost/api/products", {
+        method: "POST",
+        body: JSON.stringify({
+          name: "API Runner",
+          slug: "api-runner",
+          description: "Temporary product for route testing.",
+          price: 990000,
+          stock: 4,
+          categorySlug: "running",
+        }),
+        headers: { "content-type": "application/json" },
+      }),
+    );
+
+    expect(response.status).toBe(401);
+    expect(await readJson(response)).toEqual({
+      error: { message: "Authentication required." },
+    });
+    expect(requireAdminApiUserMock).toHaveBeenCalledTimes(1);
     expect(db.category.findUnique).not.toHaveBeenCalled();
     expect(db.product.create).not.toHaveBeenCalled();
   });
@@ -370,6 +412,30 @@ describe("app api routes", () => {
     });
   });
 
+  it("PATCH /api/products/[id] returns 403 for non-admin users", async () => {
+    requireAdminApiUser.mockResolvedValue(
+      Response.json({ error: { message: "Forbidden." } }, { status: 403 }),
+    );
+
+    const response = await patchProduct(
+      new Request("http://localhost/api/products/prod_1", {
+        method: "PATCH",
+        body: JSON.stringify({ name: "Air Runner Pro" }),
+        headers: { "content-type": "application/json" },
+      }),
+      { params: Promise.resolve({ id: "prod_1" }) },
+    );
+
+    expect(response.status).toBe(403);
+    expect(await readJson(response)).toEqual({
+      error: { message: "Forbidden." },
+    });
+    expect(requireAdminApiUserMock).toHaveBeenCalledTimes(1);
+    expect(db.product.findUnique).not.toHaveBeenCalled();
+    expect(db.category.findUnique).not.toHaveBeenCalled();
+    expect(db.product.update).not.toHaveBeenCalled();
+  });
+
   it("PATCH /api/products/[id] returns 400 when originalPrice is not greater than existing price", async () => {
     db.product.findUnique.mockResolvedValue({ id: "prod_1", price: 1290000 });
 
@@ -501,6 +567,26 @@ describe("app api routes", () => {
         message: "Product cannot be deleted because it is used in orders.",
       },
     });
+  });
+
+  it("DELETE /api/products/[id] returns 401 for anonymous requests before delete", async () => {
+    requireAdminApiUser.mockResolvedValue(
+      Response.json(
+        { error: { message: "Authentication required." } },
+        { status: 401 },
+      ),
+    );
+
+    const response = await deleteProduct(undefined, {
+      params: Promise.resolve({ id: "prod_1" }),
+    });
+
+    expect(response.status).toBe(401);
+    expect(await readJson(response)).toEqual({
+      error: { message: "Authentication required." },
+    });
+    expect(requireAdminApiUserMock).toHaveBeenCalledTimes(1);
+    expect(db.product.delete).not.toHaveBeenCalled();
   });
 
   it("DELETE /api/products/[id] returns deleted marker", async () => {

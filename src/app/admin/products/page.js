@@ -2,6 +2,7 @@ import Link from "next/link";
 import { DeleteProductButton } from "@/components/delete-product-button";
 import { formatVnd } from "@/lib/format-vnd";
 import { getAdminProducts } from "@/lib/admin-products";
+import { requireAdminUser } from "@/lib/auth";
 import { deleteProductAction } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -12,6 +13,7 @@ export const metadata = {
 };
 
 export default async function AdminProductsPage({ searchParams }) {
+  await requireAdminUser({ nextPath: "/admin/products" });
   const products = await getAdminProducts();
   const params = await searchParams;
   const errorMessage = typeof params?.error === "string" ? params.error : "";

@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { PrismaClient } from "@prisma/client";
+import { hashPassword } from "../src/lib/passwords.js";
 
 if (!process.env.DATABASE_URL) {
   const envPath = path.resolve(".env");
@@ -164,7 +165,23 @@ const products = [
   },
 ];
 
+const users = [
+  {
+    name: "MiniShop Admin",
+    email: "admin@minishop.local",
+    password: "admin123",
+    role: "ADMIN",
+  },
+  {
+    name: "MiniShop Customer",
+    email: "customer@minishop.local",
+    password: "customer123",
+    role: "CUSTOMER",
+  },
+];
+
 async function main() {
+  await db.session.deleteMany();
   await db.orderItem.deleteMany();
   await db.order.deleteMany();
   await db.product.deleteMany();
@@ -185,6 +202,15 @@ async function main() {
       ...product,
       categoryId: categoryMap.get(categorySlug),
     })),
+  });
+
+  await db.user.createMany({
+    data: await Promise.all(
+      users.map(async ({ password, ...user }) => ({
+        ...user,
+        passwordHash: await hashPassword(password),
+      })),
+    ),
   });
 }
 

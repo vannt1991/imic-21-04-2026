@@ -8,6 +8,7 @@ import {
   toProductApiModel,
   toProductCreateData,
 } from "@/lib/product-api";
+import { requireAdminApiUser } from "@/lib/auth";
 
 function isForeignKeyConstraintError(error) {
   return error?.code === "P2003";
@@ -28,6 +29,12 @@ export async function GET() {
 
 export async function POST(request) {
   try {
+    const user = await requireAdminApiUser();
+
+    if (user instanceof Response) {
+      return user;
+    }
+
     const payload = productCreateSchema.parse(await request.json());
     const category = await db.category.findUnique({
       where: { slug: payload.categorySlug },

@@ -1,12 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { cookieStore, cookies, redirect } = vi.hoisted(() => ({
-  cookieStore: {
-    set: vi.fn(),
-    delete: vi.fn(),
-  },
-  cookies: vi.fn(async () => cookieStore),
-  redirect: vi.fn(),
+const { cookies, db, redirect, setAuthSession, clearAuthSession } = vi.hoisted(
+  () => ({
+    cookies: vi.fn(),
+    db: {
+      user: {
+        findUnique: vi.fn(),
+      },
+    },
+    redirect: vi.fn(),
+    setAuthSession: vi.fn(),
+    clearAuthSession: vi.fn(),
+  }),
+);
+
+vi.mock("@/lib/db", () => ({
+  db,
 }));
 
 vi.mock("next/headers", () => ({
@@ -17,23 +26,29 @@ vi.mock("next/navigation", () => ({
   redirect,
 }));
 
-import {
-  loginAsAdminAction,
-  loginAsCustomerAction,
-  logoutAction,
-} from "@/app/login/actions";
-import {
-  AUTH_COOKIE_NAME,
-  ROLE_ADMIN,
-  ROLE_CUSTOMER,
-} from "@/lib/auth";
+vi.mock("@/lib/auth", async () => {
+  const actual = await vi.importActual("@/lib/auth");
 
-function createFormData(nextPath) {
+  return {
+    ...actual,
+    setAuthSession,
+    clearAuthSession,
+  };
+});
+
+vi.mock("@/lib/passwords", () => ({
+  verifyPassword: vi.fn(),
+}));
+
+import { verifyPassword } from "@/lib/passwords";
+import { loginAction, logoutAction } from "@/app/login/actions";
+
+function createLoginFormData(overrides = {}) {
   const formData = new FormData();
 
-  if (nextPath !== undefined) {
-    formData.set("next", nextPath);
-  }
+  formData.set("email", overrides.email ?? "admin@minishop.local");
+  formData.set("password", overrides.password ?? "admin123");
+  formData.set("next", overrides.next ?? "/admin");
 
   return formData;
 }
@@ -43,54 +58,60 @@ describe("login actions", () => {
     vi.clearAllMocks();
   });
 
-  it("stores the admin role cookie and redirects to the requested admin path", async () => {
-    await loginAsAdminAction(createFormData("/admin/orders"));
+  it("redirects back to login when credentials are invalid", async () => {
+    db.user.findUnique.mockResolvedValue(null);
 
-    expect(cookieStore.set).toHaveBeenCalledWith(
-      AUTH_COOKIE_NAME,
-      ROLE_ADMIN,
-      expect.objectContaining({
-        httpOnly: true,
-        path: "/",
-        sameSite: "lax",
-      }),
+    await loginAction(createLoginFormData());
+
+    expect(setAuthSession).not.toHaveBeenCalled();
+    expect(redirect).toHaveBeenCalledWith(
+      "/login?error=Email+ho%E1%BA%B7c+m%E1%BA%ADt+kh%E1%BA%A9u+kh%C3%B4ng+%C4%91%C3%BAng.&next=%2Fadmin&email=admin%40minishop.local",
     );
+  });
+
+  it("creates a session and redirects the admin to the requested page", async () => {
+    db.user.findUnique.mockResolvedValue({
+      id: "user_admin",
+      email: "admin@minishop.local",
+      role: "ADMIN",
+      passwordHash: "salt:hash",
+    });
+    verifyPassword.mockResolvedValue(true);
+
+    await loginAction(createLoginFormData({ next: "/admin/orders" }));
+
+    expect(setAuthSession).toHaveBeenCalledWith("user_admin");
     expect(redirect).toHaveBeenCalledWith("/admin/orders");
   });
 
-  it("stores the customer role cookie and falls back to /admin for unsafe redirects", async () => {
-    await loginAsCustomerAction(createFormData("https://evil.example"));
+  it("redirects customers away from admin targets after login", async () => {
+    db.user.findUnique.mockResolvedValue({
+      id: "user_customer",
+      email: "customer@minishop.local",
+      role: "CUSTOMER",
+      passwordHash: "salt:hash",
+    });
+    verifyPassword.mockResolvedValue(true);
 
-    expect(cookieStore.set).toHaveBeenCalledWith(
-      AUTH_COOKIE_NAME,
-      ROLE_CUSTOMER,
-      expect.objectContaining({
-        httpOnly: true,
-        path: "/",
-        sameSite: "lax",
+    await loginAction(
+      createLoginFormData({
+        email: "customer@minishop.local",
+        password: "customer123",
+        next: "/admin",
       }),
     );
-    expect(redirect).toHaveBeenCalledWith("/admin");
-  });
 
-  it("deletes the auth cookie and redirects home on logout", async () => {
-    await logoutAction(createFormData("/"));
-
-    expect(cookieStore.delete).toHaveBeenCalledWith(AUTH_COOKIE_NAME);
+    expect(setAuthSession).toHaveBeenCalledWith("user_customer");
     expect(redirect).toHaveBeenCalledWith("/");
   });
 
-  it("falls back to / on logout when next is unsafe", async () => {
-    await logoutAction(createFormData("https://evil.example"));
+  it("clears the current session on logout", async () => {
+    const formData = new FormData();
+    formData.set("next", "/");
 
-    expect(cookieStore.delete).toHaveBeenCalledWith(AUTH_COOKIE_NAME);
+    await logoutAction(formData);
+
+    expect(clearAuthSession).toHaveBeenCalled();
     expect(redirect).toHaveBeenCalledWith("/");
-  });
-
-  it("keeps /admin on logout when next is already safe", async () => {
-    await logoutAction(createFormData("/admin"));
-
-    expect(cookieStore.delete).toHaveBeenCalledWith(AUTH_COOKIE_NAME);
-    expect(redirect).toHaveBeenCalledWith("/admin");
   });
 });

@@ -11,7 +11,8 @@ Hien tai app da co:
 - cart chay phia client bang Context + `localStorage`
 - checkout goi `POST /api/orders`, tao order va tru ton kho
 - admin product CRUD bang Server Actions
-- admin order management voi server-side route guard
+- auth that bang email/password + session cookie phia server
+- admin order management va category CRUD voi server-side role guard
 - SEO co ban voi `metadata`, `sitemap.xml`, `robots.txt`, canonical/Open Graph
 
 ## Tech stack
@@ -72,12 +73,14 @@ npm run dev
 ```env
 DATABASE_URL="file:./dev.db"
 NEXT_PUBLIC_SITE_URL="http://localhost:3000"
+AUTH_SECRET="replace-me-with-a-long-random-string"
 ```
 
 Ghi chu:
 
 - `DATABASE_URL` la bat buoc cho Prisma.
 - `NEXT_PUBLIC_SITE_URL` nen luon duoc set.
+- `AUTH_SECRET` la bat buoc de ky/xac thuc session token phia server. Dev co the dung chuoi dai ngau nhien; production can dat secret rieng, khong commit.
 - Theo semantics hien tai cua Task 3, dev/test co the fallback ve `http://localhost:3000`.
 - O production, `NEXT_PUBLIC_SITE_URL` van nen duoc set day du. Cac code path dung `getSiteUrl()` / `buildAbsoluteUrl()` nhu `robots.txt`, `sitemap.xml`, canonical/Open Graph URL se fail neu bien nay thieu.
 
@@ -94,18 +97,23 @@ Ghi chu:
 
 ### Demo roles
 
-Auth hien la demo auth stub bang cookie `minishop-role`, chua dung auth provider that.
+Auth hien dung user that trong database + session cookie `httpOnly` phia server.
 
 - `ADMIN`
   - Login o `/login`
   - Co the vao `/admin`
-  - Quan ly products va orders
+  - Quan ly products, categories, orders
 - `CUSTOMER`
   - Login o `/login`
   - Khong vao duoc `/admin`
   - Bi redirect ve `/login?next=/admin`
 
-Seed hien khong tao user demo trong database vi role demo dang dua tren cookie, khong dua tren bang `User`.
+Tai khoan demo seed san:
+
+- `ADMIN`: `admin@minishop.local` / `admin123`
+- `CUSTOMER`: `customer@minishop.local` / `customer123`
+
+Luu y: `CUSTOMER` van khong vao duoc `/admin` du dang nhap thanh cong.
 
 ## Commands
 
@@ -136,11 +144,14 @@ Luu y:
 - `/cart` -> cart phia client
 - `/checkout` -> checkout form, goi order API
 - `/order-success` -> trang redirect sau checkout
-- `/login` -> demo role switcher
+- `/login` -> email/password login
 
 ### Protected admin pages
 
 - `/admin` -> admin dashboard
+- `/admin/categories` -> category list
+- `/admin/categories/new` -> create category
+- `/admin/categories/[id]/edit` -> edit category
 - `/admin/products` -> product list
 - `/admin/products/new` -> create product
 - `/admin/products/[id]/edit` -> edit product
@@ -168,11 +179,13 @@ Seed hien tao:
 
 - 3 categories: `running`, `lifestyle`, `outdoor`
 - 10 products demo
+- 2 users demo: `ADMIN`, `CUSTOMER`
+
+Category delete co relation safety: neu van con product tham chieu category do, admin se bi chan xoa.
 
 Seed khong tao:
 
 - order mau
-- user dang nhap that
 
 Muon test admin orders, hay tao don qua flow `/cart -> /checkout`.
 
@@ -182,6 +195,7 @@ Muon test admin orders, hay tao don qua flow `/cart -> /checkout`.
 
 - Set `DATABASE_URL` dung moi truong deploy.
 - Set `NEXT_PUBLIC_SITE_URL` thanh domain production day du, vi du `https://minishop.example.com`.
+- Set `AUTH_SECRET` thanh chuoi dai, random, va giu kin theo moi truong.
 - Kiem tra production khong con dung fallback local URL.
 
 ### Database
@@ -201,13 +215,14 @@ Muon test admin orders, hay tao don qua flow `/cart -> /checkout`.
 - Verify manual cac route chinh: `/`, `/products`, `/products/[slug]`, `/cart`, `/checkout`, `/login`, `/admin`.
 - Test 2 role demo:
   - `CUSTOMER` bi chan khoi `/admin`
-  - `ADMIN` vao duoc `/admin`
+  - `ADMIN` vao duoc `/admin` va `/admin/categories`
 - Tao thu 1 order de xac nhan `POST /api/orders` con hoat dong va stock bi giam dung.
+- Thu xoa 1 category dang con product de xac nhan relation safety dang chan delete.
 - Kiem tra `robots.txt`, `sitemap.xml`, canonical metadata dung dung domain production.
 
 ### Operational notes
 
-- Admin auth hien la cookie stub de phuc vu bai hoc, khong phu hop production that.
+- Admin auth hien la session auth tu lam de phuc vu bai hoc, van can hardening them neu dua vao production that.
 - SQLite phu hop local/demo; neu deploy production nhieu instance, can xem lai chien luoc database.
 - Cart dang o client `localStorage`, nen doi device/browser se khong dong bo.
 
@@ -216,6 +231,7 @@ Muon test admin orders, hay tao don qua flow `/cart -> /checkout`.
 - Vercel can khai bao toi thieu:
   - `DATABASE_URL`
   - `NEXT_PUBLIC_SITE_URL`
+  - `AUTH_SECRET`
 - Neu deploy len domain that, dat `NEXT_PUBLIC_SITE_URL` dung domain do, khong de `localhost`.
 - Vi app co `robots.txt`, `sitemap.xml`, Open Graph/canonical dua tren helper SEO, thieu `NEXT_PUBLIC_SITE_URL` o production se lam cac code path SEO can `getSiteUrl()` fail theo guard hien tai.
 - Neu tiep tuc dung SQLite tren Vercel, can kiem tra ky persistence va gioi han moi truong deploy; day hop hon cho demo/local hon la production nghiem tuc.
@@ -228,5 +244,4 @@ Muon test admin orders, hay tao don qua flow `/cart -> /checkout`.
 - Buoi 8: cart + checkout + order API
 - Buoi 9: auth stub + admin order management
 - Buoi 10 Task 3: SEO semantics cung hon cho production
-
-Task 4 README nay da duoc can theo semantics moi cua Task 3: production bat buoc `NEXT_PUBLIC_SITE_URL`, con local/dev/test van fallback duoc.
+- Buoi 11: real session auth + protected mutation APIs + admin category CRUD

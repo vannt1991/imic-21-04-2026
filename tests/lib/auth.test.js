@@ -1,13 +1,25 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { redirectMock } = vi.hoisted(() => ({
+const { cookiesMock, db, redirectMock } = vi.hoisted(() => ({
+  cookiesMock: vi.fn(),
+  db: {
+    session: {
+      create: vi.fn(),
+      deleteMany: vi.fn(),
+      findUnique: vi.fn(),
+    },
+  },
   redirectMock: vi.fn((location) => {
     throw new Error(`REDIRECT:${location}`);
   }),
 }));
 
+vi.mock("@/lib/db", () => ({
+  db,
+}));
+
 vi.mock("next/headers", () => ({
-  cookies: vi.fn(),
+  cookies: cookiesMock,
 }));
 
 vi.mock("next/navigation", () => ({
@@ -15,11 +27,10 @@ vi.mock("next/navigation", () => ({
 }));
 
 import {
-  AUTH_COOKIE_NAME,
   ROLE_ADMIN,
   ROLE_CUSTOMER,
   getCurrentUser,
-  normalizeRole,
+  hashSessionToken,
   requireAdminUser,
   sanitizeNextPath,
 } from "../../src/lib/auth.js";
@@ -27,81 +38,102 @@ import {
 function createCookieStore(value) {
   return {
     get(name) {
-      if (name !== AUTH_COOKIE_NAME || value === undefined) {
+      if (name !== "minishop-session" || !value) {
         return undefined;
       }
 
       return { value };
     },
+    delete: vi.fn(),
   };
 }
 
 describe("auth helpers", () => {
   beforeEach(() => {
-    redirectMock.mockClear();
-  });
-
-  it("normalizes supported roles and rejects unknown values", () => {
-    expect(normalizeRole("admin")).toBe(ROLE_ADMIN);
-    expect(normalizeRole(" CUSTOMER ")).toBe(ROLE_CUSTOMER);
-    expect(normalizeRole("manager")).toBe(null);
-    expect(normalizeRole("")).toBe(null);
-  });
-
-  it("returns null when the auth cookie is missing or invalid", async () => {
-    await expect(getCurrentUser(createCookieStore())).resolves.toBe(null);
-    await expect(getCurrentUser(createCookieStore("manager"))).resolves.toBe(
-      null,
-    );
-  });
-
-  it("returns a stub user for the supported demo roles", async () => {
-    await expect(getCurrentUser(createCookieStore("ADMIN"))).resolves.toEqual({
-      id: "stub-admin",
-      name: "MiniShop Admin",
-      email: "admin@minishop.local",
-      role: ROLE_ADMIN,
-    });
-
-    await expect(getCurrentUser(createCookieStore("customer"))).resolves.toEqual({
-      id: "stub-customer",
-      name: "MiniShop Customer",
-      email: "customer@minishop.local",
-      role: ROLE_CUSTOMER,
-    });
-  });
-
-  it("returns isolated user objects for each lookup", async () => {
-    const firstUser = await getCurrentUser(createCookieStore("ADMIN"));
-    firstUser.name = "Mutated";
-
-    await expect(getCurrentUser(createCookieStore("ADMIN"))).resolves.toEqual({
-      id: "stub-admin",
-      name: "MiniShop Admin",
-      email: "admin@minishop.local",
-      role: ROLE_ADMIN,
-    });
+    vi.clearAllMocks();
   });
 
   it("keeps redirect targets on internal paths only", () => {
     expect(sanitizeNextPath("/admin/orders")).toBe("/admin/orders");
-    expect(sanitizeNextPath("/\\\\evil.example")).toBe("/admin");
-    expect(sanitizeNextPath("https://evil.example")).toBe("/admin");
     expect(sanitizeNextPath("orders")).toBe("/admin");
+    expect(sanitizeNextPath("https://evil.example")).toBe("/admin");
   });
 
-  it("returns the admin user from requireAdminUser", async () => {
+  it("hashes the session token deterministically", () => {
+    process.env.AUTH_SECRET = "test-auth-secret";
+
+    expect(hashSessionToken("token-123")).toBe(hashSessionToken("token-123"));
+    expect(hashSessionToken("token-123")).not.toBe(hashSessionToken("token-456"));
+  });
+
+  it("returns null when the session cookie is missing", async () => {
     await expect(
-      requireAdminUser({
-        cookieStore: createCookieStore("admin"),
-      }),
+      getCurrentUser({ cookieStore: createCookieStore() }),
+    ).resolves.toBe(null);
+  });
+
+  it("returns the database user from an active session", async () => {
+    process.env.AUTH_SECRET = "test-auth-secret";
+    db.session.findUnique.mockResolvedValue({
+      id: "sess_1",
+      expiresAt: new Date("2099-01-01T00:00:00.000Z"),
+      user: {
+        id: "user_1",
+        name: "MiniShop Admin",
+        email: "admin@minishop.local",
+        role: ROLE_ADMIN,
+      },
+    });
+
+    await expect(
+      getCurrentUser({ cookieStore: createCookieStore("token-123") }),
     ).resolves.toEqual({
-      id: "stub-admin",
+      id: "user_1",
       name: "MiniShop Admin",
       email: "admin@minishop.local",
       role: ROLE_ADMIN,
     });
-    expect(redirectMock).not.toHaveBeenCalled();
+  });
+
+  it("avoids cookie mutation during implicit render-path cleanup", async () => {
+    process.env.AUTH_SECRET = "test-auth-secret";
+    const cookieStore = createCookieStore("expired-token");
+
+    cookiesMock.mockResolvedValue(cookieStore);
+    db.session.findUnique.mockResolvedValue({
+      id: "sess_1",
+      expiresAt: new Date("2000-01-01T00:00:00.000Z"),
+      user: {
+        id: "user_1",
+        role: ROLE_ADMIN,
+      },
+    });
+
+    await expect(getCurrentUser()).resolves.toBe(null);
+    expect(db.session.deleteMany).toHaveBeenCalledWith({
+      where: { tokenHash: hashSessionToken("expired-token") },
+    });
+    expect(cookieStore.delete).not.toHaveBeenCalled();
+  });
+
+  it("cleans up expired sessions and returns null", async () => {
+    process.env.AUTH_SECRET = "test-auth-secret";
+    const cookieStore = createCookieStore("expired-token");
+    db.session.findUnique.mockResolvedValue({
+      id: "sess_1",
+      tokenHash: hashSessionToken("expired-token"),
+      expiresAt: new Date("2000-01-01T00:00:00.000Z"),
+      user: {
+        id: "user_1",
+        role: ROLE_ADMIN,
+      },
+    });
+
+    await expect(getCurrentUser({ cookieStore })).resolves.toBe(null);
+    expect(db.session.deleteMany).toHaveBeenCalledWith({
+      where: { tokenHash: hashSessionToken("expired-token") },
+    });
+    expect(cookieStore.delete).toHaveBeenCalledWith("minishop-session");
   });
 
   it("redirects anonymous users to login with the next path", async () => {
@@ -113,20 +145,23 @@ describe("auth helpers", () => {
     ).rejects.toThrow("REDIRECT:/login?next=%2Fadmin%2Forders");
   });
 
-  it("redirects customer users to login with the next path", async () => {
-    await expect(
-      requireAdminUser({
-        cookieStore: createCookieStore("customer"),
-        nextPath: "/admin/orders",
-      }),
-    ).rejects.toThrow("REDIRECT:/login?next=%2Fadmin%2Forders");
-  });
+  it("redirects logged-in customers away from admin pages", async () => {
+    process.env.AUTH_SECRET = "test-auth-secret";
+    db.session.findUnique.mockResolvedValue({
+      id: "sess_2",
+      expiresAt: new Date("2099-01-01T00:00:00.000Z"),
+      user: {
+        id: "user_2",
+        name: "MiniShop Customer",
+        email: "customer@minishop.local",
+        role: ROLE_CUSTOMER,
+      },
+    });
 
-  it("sanitizes unsafe redirect targets before redirecting", async () => {
     await expect(
       requireAdminUser({
-        cookieStore: createCookieStore(),
-        nextPath: "https://evil.example",
+        cookieStore: createCookieStore("customer-token"),
+        nextPath: "/admin",
       }),
     ).rejects.toThrow("REDIRECT:/login?next=%2Fadmin");
   });

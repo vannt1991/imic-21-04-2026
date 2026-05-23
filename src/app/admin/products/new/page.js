@@ -1,5 +1,6 @@
 import { AdminProductForm } from "@/components/admin-product-form";
-import { getAdminCategories } from "@/lib/admin-products";
+import { getAdminCategories } from "@/lib/admin-categories";
+import { requireAdminUser } from "@/lib/auth";
 import { createProductAction } from "../actions";
 
 export const metadata = {
@@ -20,6 +21,7 @@ function readBooleanParam(params, key, fallback) {
 }
 
 export default async function NewAdminProductPage({ searchParams }) {
+  await requireAdminUser({ nextPath: "/admin/products/new" });
   const categories = await getAdminCategories();
   const params = await searchParams;
   const errorMessage = readStringParam(params, "error");

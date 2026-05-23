@@ -3,6 +3,7 @@ import { AdminOrderStatusForm } from "@/components/admin-order-status-form";
 import { formatVnd } from "@/lib/format-vnd";
 import { getOrderStatusLabel } from "@/lib/admin-order-status";
 import { getAdminOrderById } from "@/lib/admin-orders";
+import { requireAdminUser } from "@/lib/auth";
 import { updateOrderStatusAction } from "../actions";
 
 export const dynamic = "force-dynamic";
@@ -12,6 +13,7 @@ export default async function AdminOrderDetailPage({ params, searchParams }) {
   const resolvedSearchParams = await searchParams;
   const orderId =
     typeof resolvedParams?.id === "string" ? resolvedParams.id.trim() : "";
+  await requireAdminUser({ nextPath: `/admin/orders/${orderId}` });
   const order = await getAdminOrderById(orderId);
 
   if (!order) {

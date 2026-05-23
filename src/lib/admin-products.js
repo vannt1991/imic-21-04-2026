@@ -6,13 +6,6 @@ const categorySelect = {
   name: true,
 };
 
-export async function getAdminCategories() {
-  return db.category.findMany({
-    select: categorySelect,
-    orderBy: { name: "asc" },
-  });
-}
-
 export async function getAdminProducts() {
   return db.product.findMany({
     include: {
