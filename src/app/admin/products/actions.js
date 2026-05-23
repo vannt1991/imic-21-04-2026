@@ -3,6 +3,7 @@
 import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireAdminUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { readProductFormPayload } from "@/lib/admin-product-form";
 import {
@@ -126,6 +127,8 @@ function buildAdminProductsUrl(errorMessage = "") {
 }
 
 export async function createProductAction(formData) {
+  await requireAdminUser({ nextPath: "/admin/products/new" });
+
   const rawValues = readRawProductFormValues(formData);
   const parsedPayload = productCreateSchema.safeParse(
     readProductFormPayload(formData),
@@ -189,6 +192,8 @@ export async function createProductAction(formData) {
 }
 
 export async function updateProductAction(productId, formData) {
+  await requireAdminUser({ nextPath: `/admin/products/${productId}/edit` });
+
   const rawValues = readRawProductFormValues(formData);
   const parsedPayload = productUpdateSchema.safeParse(
     readProductFormPayload(formData),
@@ -286,6 +291,8 @@ export async function updateProductAction(productId, formData) {
 }
 
 export async function deleteProductAction(productId) {
+  await requireAdminUser({ nextPath: "/admin/products" });
+
   try {
     const deletedProduct = await db.product.delete({
       where: { id: productId },

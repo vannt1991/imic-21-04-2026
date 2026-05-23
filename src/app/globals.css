@@ -333,6 +333,33 @@ select {
   margin-top: 24px;
 }
 
+.site-nav__button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.site-nav__button:hover {
+  color: var(--accent);
+}
+
+.admin-layout__session {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(194, 65, 12, 0.06);
+}
+
+.admin-layout__session p {
+  margin: 0;
+  color: var(--muted);
+}
+
 .admin-layout__nav a {
   display: inline-flex;
   align-items: center;
@@ -423,6 +450,53 @@ select {
   transform: translateY(-2px);
   border-color: rgba(194, 65, 12, 0.18);
   background: rgba(255, 255, 255, 0.82);
+}
+
+.login-page {
+  display: grid;
+  min-height: calc(100vh - 72px);
+  align-items: center;
+  padding: 48px 0 72px;
+}
+
+.login-card {
+  width: min(560px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  background: var(--surface-strong);
+  box-shadow: var(--shadow);
+}
+
+.login-card__eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.78rem;
+  color: var(--accent);
+}
+
+.login-card h1 {
+  margin: 0;
+  font-family: var(--font-space-grotesk), Arial, sans-serif;
+  letter-spacing: -0.04em;
+}
+
+.login-card__description,
+.login-card__session {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.login-card__actions,
+.login-card__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .admin-product-card {
@@ -568,6 +642,114 @@ select {
   gap: 12px;
 }
 
+.admin-order-list,
+.admin-order-detail {
+  display: grid;
+  gap: 20px;
+}
+
+.admin-order-detail {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.admin-order-card,
+.admin-order-panel,
+.admin-order-item {
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--surface-strong);
+  box-shadow: var(--shadow);
+}
+
+.admin-order-card,
+.admin-order-panel {
+  padding: 24px;
+}
+
+.admin-order-card__copy,
+.admin-order-meta,
+.admin-order-items,
+.admin-order-status-form {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-order-card__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.admin-order-card__stats div {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(194, 65, 12, 0.06);
+}
+
+.admin-order-card__stats dt,
+.admin-order-card__stats dd {
+  margin: 0;
+}
+
+.admin-order-card__stats dd {
+  margin-top: 6px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.admin-order-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.admin-order-panel--full {
+  grid-column: 1 / -1;
+}
+
+.admin-order-meta div,
+.admin-order-item,
+.admin-order-item dl {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-order-item {
+  padding: 18px;
+}
+
+.admin-order-item h3,
+.admin-order-panel h2 {
+  margin: 0;
+  font-family: var(--font-space-grotesk), Arial, sans-serif;
+}
+
+.admin-order-item p,
+.admin-order-meta dt,
+.admin-order-meta dd,
+.admin-order-item dt,
+.admin-order-item dd {
+  margin: 0;
+  color: var(--muted);
+}
+
+.admin-order-banner {
+  margin: 12px 0 0;
+  padding: 14px 16px;
+  border-radius: 16px;
+}
+
+.admin-order-banner--success {
+  background: rgba(21, 128, 61, 0.12);
+  color: #166534;
+}
+
+.admin-order-banner--error {
+  background: rgba(127, 29, 29, 0.1);
+  color: #7f1d1d;
+}
+
 @media (max-width: 900px) {
   .admin-layout {
     grid-template-columns: 1fr;
@@ -587,16 +769,16 @@ select {
     flex-direction: column;
   }
 
-  .admin-product-card__stats {
+  .admin-order-card__stats {
     grid-template-columns: 1fr;
   }
 
-  .admin-product-card__actions {
+  .admin-order-card__actions {
     justify-content: stretch;
   }
 
-  .admin-product-card__actions .button,
-  .admin-product-card__actions form,
+  .admin-order-card__actions .button,
+  .admin-order-card__actions form,
   .admin-form__actions .button {
     width: 100%;
   }
