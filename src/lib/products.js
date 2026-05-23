@@ -1,4 +1,9 @@
 import { db } from "@/lib/db";
+import {
+  PRODUCTS_PER_PAGE,
+  buildProductWhere,
+  normalizeProductCatalogParams,
+} from "@/lib/product-search";
 
 export function toProductViewModel(product) {
   return {
@@ -26,6 +31,61 @@ async function findProducts(where = {}, take) {
   });
 
   return products.map(toProductViewModel);
+}
+
+async function getCatalogCategories() {
+  return db.category.findMany({
+    where: {
+      products: {
+        some: {
+          isActive: true,
+        },
+      },
+    },
+    select: {
+      slug: true,
+      name: true,
+    },
+    orderBy: {
+      name: "asc",
+    },
+  });
+}
+
+export async function getProductCatalogPage(rawParams = {}) {
+  const filters = normalizeProductCatalogParams(rawParams);
+  const where = buildProductWhere(filters);
+  const [totalItems, categories] = await Promise.all([
+    db.product.count({ where }),
+    getCatalogCategories(),
+  ]);
+
+  const totalPages = Math.max(1, Math.ceil(totalItems / PRODUCTS_PER_PAGE));
+  const page = Math.min(filters.page, totalPages);
+
+  const products = await db.product.findMany({
+    where,
+    include: { category: true },
+    orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
+    skip: (page - 1) * PRODUCTS_PER_PAGE,
+    take: PRODUCTS_PER_PAGE,
+  });
+
+  return {
+    filters: {
+      ...filters,
+      page,
+    },
+    pagination: {
+      page,
+      perPage: PRODUCTS_PER_PAGE,
+      totalItems,
+      totalPages,
+    },
+    categories,
+    products: products.map(toProductViewModel),
+    hasResults: totalItems > 0,
+  };
 }
 
 export async function getProducts() {
