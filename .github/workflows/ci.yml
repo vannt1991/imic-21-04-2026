@@ -34,6 +34,9 @@ jobs:
       - name: Start Postgres
         run: npm run db:up
 
+      - name: Wait for Postgres
+        run: until docker compose exec -T postgres pg_isready -U postgres -d minishop; do sleep 1; done
+
       - name: Install Playwright browser
         run: npm run e2e:install
 

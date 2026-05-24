@@ -15,11 +15,10 @@ export default defineConfig({
     ? undefined
     : {
         command:
-          "npm run db:up && npm run db:reset:demo && npm run dev -- --hostname 127.0.0.1 --port 3000",
+          "npm run db:up && until docker compose exec -T postgres pg_isready -U postgres -d minishop; do sleep 1; done && npm run db:reset:demo && npm run dev -- --hostname 127.0.0.1 --port 3000",
         env: {
           ...process.env,
           DATABASE_URL:
-            process.env.DATABASE_URL ??
             "postgresql://postgres:postgres@localhost:5432/minishop?schema=public",
           AUTH_SECRET: process.env.AUTH_SECRET ?? "test-auth-secret",
           NEXT_PUBLIC_SITE_URL:
