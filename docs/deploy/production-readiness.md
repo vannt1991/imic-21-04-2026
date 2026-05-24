@@ -44,7 +44,8 @@ Use this flow for teaching, local debugging, and CI-style smoke-test prep.
 
 ```bash
 npm run verify
-E2E_BASE_URL="https://minishop.example.com" npm run e2e
+# Only when the target env was prepared with the demo seed data + demo creds
+E2E_BASE_URL="https://preview.minishop.example.com" npm run e2e
 ```
 
 Manual checks:
@@ -55,8 +56,14 @@ Manual checks:
 - Complete one checkout flow and confirm redirect to `/order-success?orderId=...`.
 - Open `/robots.txt` and `/sitemap.xml` under the real domain.
 
+E2E note:
+
+- The current Playwright smoke suite assumes demo-seeded catalog data and the seeded demo admin account (`admin@minishop.local` / `admin123`).
+- Treat `E2E_BASE_URL=... npm run e2e` as a staging/preview smoke path, or only run it against environments intentionally prepared with those demo fixtures.
+- Do not treat the current smoke suite as a generic production-safe validation step for arbitrary real environments.
+
 ## 6. CI expectations
 
 - `.github/workflows/ci.yml` should boot Postgres, set a Postgres `DATABASE_URL`, rebuild the demo DB, and run `test`, `lint`, `build`, and `e2e`.
-- `npm run e2e` is plain `playwright test`. Without `E2E_BASE_URL`, Playwright self-manages the local Postgres demo DB reset and dev server; with `E2E_BASE_URL`, it targets the already-running deployment instead.
+- `npm run e2e` is plain `playwright test`. Without `E2E_BASE_URL`, Playwright self-manages the local Postgres demo DB reset and dev server, using repo-local `.env` `DATABASE_URL` when present and otherwise falling back to the default local DSN. With `E2E_BASE_URL`, it targets the already-running environment instead.
 - Keep smoke coverage small; add cases only when a regression escaped lower-level tests.

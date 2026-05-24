@@ -79,6 +79,7 @@ Ghi chu:
 - `AUTH_SECRET` la bat buoc de ky/xac thuc session token phia server. Dev co the dung chuoi dai ngau nhien; production can dat secret rieng, khong commit.
 - `.env.example` da kem production examples cho `DATABASE_URL`, `NEXT_PUBLIC_SITE_URL`, `AUTH_SECRET`.
 - Neu doi hostname/user/password cho Postgres local, cap nhat lai `DATABASE_URL` trong `.env` cho khop.
+- `npm run e2e` local se doc `DATABASE_URL` tu repo-local `.env`; neu khong co, Playwright moi fallback ve DSN Postgres local mac dinh.
 
 ## Demo flow
 
@@ -136,7 +137,7 @@ npm run db:studio
 Luu y:
 
 - `npm run verify` chay `test + lint + build`.
-- `npm run e2e` hien chi la `playwright test`; Playwright config tu quan ly demo Postgres reset + dev server cho local CI-style runs.
+- `npm run e2e` hien chi la `playwright test`; khi local self-managed, Playwright tu quan ly demo Postgres reset + dev server va lay `DATABASE_URL` tu repo-local `.env` neu co.
 - `npm run e2e:install` cai browser/deps Playwright, can thiet cho local machine/CI moi.
 - `npm run e2e:prepare` gom reset demo DB truoc E2E khi can chay thu cong ben ngoai Playwright flow; can co Postgres local dang chay.
 - `npm run db:up` / `npm run db:down` dung de bat/tat Postgres local qua Docker Compose.
