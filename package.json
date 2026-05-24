@@ -12,12 +12,17 @@
     "e2e:prepare": "npm run db:reset:demo",
     "e2e": "playwright test",
     "verify": "npm run test && npm run lint && npm run build",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
     "db:generate": "prisma generate",
-    "db:migrate": "node prisma/migrate.mjs",
+    "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
-    "db:seed": "node prisma/seed.mjs",
-    "db:reset:demo": "npm run db:generate && npm run db:migrate && npm run db:seed",
+    "db:seed": "prisma db seed",
+    "db:reset:demo": "prisma migrate reset --force",
     "db:studio": "prisma studio"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
