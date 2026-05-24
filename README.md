@@ -45,19 +45,21 @@ cp .env.example .env
 npm run db:up
 ```
 
-4. Tao lai demo database + seed:
+4. Cho Postgres san sang roi moi reset demo DB. Co the kiem tra bang `docker compose ps` va doi service database vao trang thai healthy/running.
+
+5. Tao lai demo database + seed:
 
 ```bash
 npm run db:reset:demo
 ```
 
-5. Chay app:
+6. Chay app:
 
 ```bash
 npm run dev
 ```
 
-6. Mo `http://localhost:3000`
+7. Mo `http://localhost:3000`
 
 ## Environment variables
 
@@ -138,6 +140,7 @@ Luu y:
 - `npm run e2e:install` cai browser/deps Playwright, can thiet cho local machine/CI moi.
 - `npm run e2e:prepare` gom reset demo DB truoc E2E khi can chay thu cong ben ngoai Playwright flow; can co Postgres local dang chay.
 - `npm run db:up` / `npm run db:down` dung de bat/tat Postgres local qua Docker Compose.
+- Sau `npm run db:up`, nen doi Postgres san sang (`docker compose ps` hoac `pg_isready`) truoc khi chay `npm run db:reset:demo`.
 - `npm run db:migrate` va `npm run db:reset:demo` danh cho local Postgres workflow.
 - `npm run db:migrate:deploy` la lenh migrate cho deploy/prod tren external Postgres.
 - `npm run db:reset:demo` la shortcut local/demo: reset schema + apply migrations + seed lai toan bo demo data.

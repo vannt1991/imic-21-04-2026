@@ -3,7 +3,7 @@
 ## 1. What stays local/demo-only
 
 - `npm run db:reset:demo` is destructive and local-only. It drops and recreates the local demo schema before reseeding.
-- `npm run db:seed` is destructive and local-only. It rewrites demo users, categories, products, and orders.
+- `npm run db:seed` is destructive and local-only. It rewrites demo users, categories, and products, and clears any local orders before reseeding.
 - `docker-compose.yml` is local-only infra for the Postgres container used during development and smoke testing.
 - `npm run db:migrate` is the local developer migration workflow. Do not point it at a shared/staging/production database.
 
@@ -26,6 +26,7 @@ AUTH_SECRET="use-a-long-random-secret-per-environment"
 npm install
 cp .env.example .env
 npm run db:up
+# wait for Postgres to be healthy/ready, e.g. `docker compose ps`
 npm run db:reset:demo
 npm run dev
 ```
@@ -50,7 +51,7 @@ Manual checks:
 
 - Visit `/`, `/products`, `/products/[slug]`, `/cart`, `/checkout`, `/login`, and `/admin`.
 - Confirm anonymous `/admin` redirects to `/login?next=/admin`.
-- Log in with the seeded admin account and confirm `/admin` loads.
+- Confirm admin access works via your production bootstrap/provisioning path, using a separately created admin user instead of demo seed credentials.
 - Complete one checkout flow and confirm redirect to `/order-success?orderId=...`.
 - Open `/robots.txt` and `/sitemap.xml` under the real domain.
 
