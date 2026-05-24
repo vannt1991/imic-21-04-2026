@@ -6,7 +6,7 @@ MiniShop la course project Next.js App Router mo phong mot flow ban hang hoan ch
 
 Hien tai app da co:
 
-- storefront doc du lieu tu Prisma + SQLite
+- storefront doc du lieu tu Prisma + PostgreSQL
 - catalog co `search`, `category filter`, `pagination` bang URL search params
 - cart chay phia client bang Context + `localStorage`
 - checkout goi `POST /api/orders`, tao order va tru ton kho
@@ -216,7 +216,7 @@ Xem them tai `docs/deploy/production-readiness.md`.
 
 ## Cau truc hoc phan hien tai
 
-- Buoi 5: Prisma + SQLite
+- Buoi 5: Prisma + PostgreSQL
 - Buoi 6: API routes
 - Buoi 7: admin product CRUD
 - Buoi 8: cart + checkout + order API
