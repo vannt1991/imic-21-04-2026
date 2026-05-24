@@ -15,10 +15,15 @@ export default defineConfig({
     ? undefined
     : {
         command:
-          "npm run db:reset:demo && npm run dev -- --hostname 127.0.0.1 --port 3000",
+          "npm run db:up && npm run db:reset:demo && npm run dev -- --hostname 127.0.0.1 --port 3000",
         env: {
           ...process.env,
+          DATABASE_URL:
+            process.env.DATABASE_URL ??
+            "postgresql://postgres:postgres@localhost:5432/minishop?schema=public",
           AUTH_SECRET: process.env.AUTH_SECRET ?? "test-auth-secret",
+          NEXT_PUBLIC_SITE_URL:
+            process.env.NEXT_PUBLIC_SITE_URL ?? "http://127.0.0.1:3000",
         },
         url: "http://127.0.0.1:3000",
         reuseExistingServer: false,
