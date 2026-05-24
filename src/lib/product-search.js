@@ -2,7 +2,17 @@ export const PRODUCTS_PER_PAGE = 9;
 
 const CATEGORY_SLUG_PATTERN = /^[a-z0-9-]+$/;
 
+function unwrapParamValue(value) {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+
+  return value;
+}
+
 function normalizeQuery(value) {
+  value = unwrapParamValue(value);
+
   if (typeof value !== "string") {
     return "";
   }
@@ -11,6 +21,8 @@ function normalizeQuery(value) {
 }
 
 function normalizeCategory(value) {
+  value = unwrapParamValue(value);
+
   if (typeof value !== "string") {
     return "";
   }
@@ -21,6 +33,8 @@ function normalizeCategory(value) {
 }
 
 function normalizePage(value) {
+  value = unwrapParamValue(value);
+
   if (typeof value === "number") {
     return Number.isInteger(value) && value > 0 ? value : 1;
   }
@@ -52,9 +66,9 @@ export function buildProductWhere(filters) {
   if (filters.q) {
     and.push({
       OR: [
-        { name: { contains: filters.q, mode: "insensitive" } },
-        { description: { contains: filters.q, mode: "insensitive" } },
-        { category: { name: { contains: filters.q, mode: "insensitive" } } },
+        { name: { contains: filters.q } },
+        { description: { contains: filters.q } },
+        { category: { name: { contains: filters.q } } },
       ],
     });
   }

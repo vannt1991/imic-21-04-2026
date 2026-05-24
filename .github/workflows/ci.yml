@@ -1,0 +1,53 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DATABASE_URL: file:./dev.db
+      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
+      AUTH_SECRET: ci-auth-secret
+      CI: "true"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install sqlite3
+        run: sudo apt-get update && sudo apt-get install --yes sqlite3
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: npm run e2e:install
+
+      - name: Rebuild demo database
+        run: npm run db:reset:demo
+
+      - name: Run unit and integration tests
+        run: npm run test
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Build app
+        run: npm run build
+
+      - name: Run smoke tests
+        run: npm run e2e

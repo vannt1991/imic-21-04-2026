@@ -1,3 +1,5 @@
+import { isProductionEnvironment } from "@/lib/env";
+
 const FALLBACK_SITE_URL = "http://localhost:3000";
 const MISSING_SITE_URL_ERROR =
   "NEXT_PUBLIC_SITE_URL must be set in production.";
@@ -30,7 +32,7 @@ export function getOptionalSiteUrl() {
   const siteUrl = readSiteUrlValue();
 
   if (!siteUrl) {
-    if (process.env.NODE_ENV === "production") {
+    if (isProductionEnvironment()) {
       return null;
     }
 
@@ -44,7 +46,7 @@ export function getSiteUrl() {
   const siteUrl = readSiteUrlValue();
 
   if (!siteUrl) {
-    if (process.env.NODE_ENV === "production") {
+    if (isProductionEnvironment()) {
       throw new Error(MISSING_SITE_URL_ERROR);
     }
 

@@ -40,31 +40,19 @@ npm install
 cp .env.example .env
 ```
 
-4. Generate Prisma Client:
+4. Tao lai demo database + seed:
 
 ```bash
-npm run db:generate
+npm run db:reset:demo
 ```
 
-5. Tao `prisma/dev.db` tu migration local hien tai:
-
-```bash
-npm run db:migrate
-```
-
-6. Seed database local:
-
-```bash
-npm run db:seed
-```
-
-7. Chay app:
+5. Chay app:
 
 ```bash
 npm run dev
 ```
 
-8. Mo `http://localhost:3000`
+6. Mo `http://localhost:3000`
 
 ## Environment variables
 
@@ -79,10 +67,10 @@ AUTH_SECRET="replace-me-with-a-long-random-string"
 Ghi chu:
 
 - `DATABASE_URL` la bat buoc cho Prisma.
-- `NEXT_PUBLIC_SITE_URL` nen luon duoc set.
+- `NEXT_PUBLIC_SITE_URL` nen luon duoc set; local dung `http://localhost:3000`, production dung domain that.
 - `AUTH_SECRET` la bat buoc de ky/xac thuc session token phia server. Dev co the dung chuoi dai ngau nhien; production can dat secret rieng, khong commit.
-- Theo semantics hien tai cua Task 3, dev/test co the fallback ve `http://localhost:3000`.
-- O production, `NEXT_PUBLIC_SITE_URL` van nen duoc set day du. Cac code path dung `getSiteUrl()` / `buildAbsoluteUrl()` nhu `robots.txt`, `sitemap.xml`, canonical/Open Graph URL se fail neu bien nay thieu.
+- `.env.example` da kem production examples cho `DATABASE_URL`, `NEXT_PUBLIC_SITE_URL`, `AUTH_SECRET`.
+- Repo hien van dung Prisma `provider = "sqlite"`, nen Postgres production hien la chien luoc deploy duoc document hoa, chua phai runtime dang impl san.
 
 ## Demo flow
 
@@ -123,14 +111,26 @@ npm run build
 npm run start
 npm run lint
 npm run test
+npm run verify
+npm run e2e:install
+npm run e2e:prepare
+npm run e2e
 npm run db:generate
 npm run db:migrate
+npm run db:migrate:deploy
 npm run db:seed
+npm run db:reset:demo
 npm run db:studio
 ```
 
 Luu y:
 
+- `npm run verify` chay `test + lint + build`.
+- `npm run e2e` hien chi la `playwright test`; Playwright config tu quan ly demo DB reset + dev server cho local CI-style runs.
+- `npm run e2e:install` cai browser/deps Playwright, can thiet cho local machine/CI moi.
+- `npm run e2e:prepare` gom reset demo DB truoc E2E khi can chay thu cong ben ngoai Playwright flow.
+- `npm run db:migrate:deploy` la lenh migration discipline cho deploy; khong thay the viec chuyen datasource sang Postgres.
+- `npm run db:reset:demo` la shortcut local/demo: `db:generate -> db:migrate -> db:seed`.
 - `npm run db:seed` dang `deleteMany()` toan bo `orderItem`, `order`, `product`, `category`, `user` roi seed lai categories/products mau.
 - Neu can giu du lieu local, khong chay seed bua truoc khi backup.
 
@@ -162,10 +162,10 @@ Luu y:
 
 - `GET /api/categories` -> category list
 - `GET /api/products` -> product list
-- `POST /api/products` -> create product
+- `POST /api/products` -> create product, admin-only
 - `GET /api/products/[id]` -> product detail by id
-- `PATCH /api/products/[id]` -> update product
-- `DELETE /api/products/[id]` -> delete product
+- `PATCH /api/products/[id]` -> update product, admin-only
+- `DELETE /api/products/[id]` -> delete product, admin-only
 - `POST /api/orders` -> create order, validate payload, reserve stock
 
 ### SEO routes
@@ -191,40 +191,7 @@ Muon test admin orders, hay tao don qua flow `/cart -> /checkout`.
 
 ## Production checklist
 
-### Environment
-
-- Set `DATABASE_URL` dung moi truong deploy.
-- Set `NEXT_PUBLIC_SITE_URL` thanh domain production day du, vi du `https://minishop.example.com`.
-- Set `AUTH_SECRET` thanh chuoi dai, random, va giu kin theo moi truong.
-- Kiem tra production khong con dung fallback local URL.
-
-### Database
-
-- Chay `npm install`.
-- Chay `npm run db:generate`.
-- Luu y: `npm run db:migrate` hien la script local cho SQLite demo, khong phai migration flow production-aware theo `DATABASE_URL`.
-- Neu deploy production that, can thiet ke migration flow rieng cho database production truoc khi app serve traffic.
-- Xac nhan database co categories/products seed hoac du lieu that.
-- Neu dinh chay `npm run db:seed`, hieu ro script hien tai se xoa du lieu dang co.
-
-### App verification
-
-- Chay `npm run test`.
-- Chay `npm run lint`.
-- Chay `npm run build`.
-- Verify manual cac route chinh: `/`, `/products`, `/products/[slug]`, `/cart`, `/checkout`, `/login`, `/admin`.
-- Test 2 role demo:
-  - `CUSTOMER` bi chan khoi `/admin`
-  - `ADMIN` vao duoc `/admin` va `/admin/categories`
-- Tao thu 1 order de xac nhan `POST /api/orders` con hoat dong va stock bi giam dung.
-- Thu xoa 1 category dang con product de xac nhan relation safety dang chan delete.
-- Kiem tra `robots.txt`, `sitemap.xml`, canonical metadata dung dung domain production.
-
-### Operational notes
-
-- Admin auth hien la session auth tu lam de phuc vu bai hoc, van can hardening them neu dua vao production that.
-- SQLite phu hop local/demo; neu deploy production nhieu instance, can xem lai chien luoc database.
-- Cart dang o client `localStorage`, nen doi device/browser se khong dong bo.
+Xem them tai `docs/deploy/production-readiness.md`.
 
 ## Vercel notes
 

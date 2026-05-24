@@ -103,16 +103,15 @@ describe("getProductCatalogPage", () => {
         AND: [
           {
             OR: [
-              { name: { contains: "trail", mode: "insensitive" } },
+              { name: { contains: "trail" } },
               {
                 description: {
                   contains: "trail",
-                  mode: "insensitive",
                 },
               },
               {
                 category: {
-                  name: { contains: "trail", mode: "insensitive" },
+                  name: { contains: "trail" },
                 },
               },
             ],
@@ -132,16 +131,15 @@ describe("getProductCatalogPage", () => {
           AND: [
             {
               OR: [
-                { name: { contains: "trail", mode: "insensitive" } },
+                { name: { contains: "trail" } },
                 {
                   description: {
                     contains: "trail",
-                    mode: "insensitive",
                   },
                 },
                 {
                   category: {
-                    name: { contains: "trail", mode: "insensitive" },
+                    name: { contains: "trail" },
                   },
                 },
               ],
@@ -194,17 +192,14 @@ describe("getProductCatalogPage", () => {
           AND: [
             {
               OR: [
-                { name: { contains: "missing", mode: "insensitive" } },
+                { name: { contains: "missing" } },
                 {
                   description: {
                     contains: "missing",
-                    mode: "insensitive",
                   },
                 },
                 {
-                  category: {
-                    name: { contains: "missing", mode: "insensitive" },
-                  },
+                  category: { name: { contains: "missing" } },
                 },
               ],
             },

@@ -35,6 +35,20 @@ describe("product search helpers", () => {
     });
   });
 
+  it("accepts App Router array params by using the first value", () => {
+    expect(
+      normalizeProductCatalogParams({
+        q: ["  air  ", "trail"],
+        category: [" Running ", "outdoor"],
+        page: ["2", "3"],
+      }),
+    ).toEqual({
+      q: "air",
+      category: "running",
+      page: 2,
+    });
+  });
+
   it("rejects malformed page strings", () => {
     expect(
       normalizeProductCatalogParams({
@@ -73,11 +87,11 @@ describe("product search helpers", () => {
       AND: [
         {
           OR: [
-            { name: { contains: "trail", mode: "insensitive" } },
-            { description: { contains: "trail", mode: "insensitive" } },
+            { name: { contains: "trail" } },
+            { description: { contains: "trail" } },
             {
               category: {
-                name: { contains: "trail", mode: "insensitive" },
+                name: { contains: "trail" },
               },
             },
           ],
@@ -86,6 +100,31 @@ describe("product search helpers", () => {
           category: {
             slug: "outdoor",
           },
+        },
+      ],
+    });
+  });
+
+  it("builds SQLite-safe keyword filters without Prisma mode flags", () => {
+    expect(
+      buildProductWhere({
+        q: "air",
+        category: "",
+        page: 1,
+      }),
+    ).toEqual({
+      isActive: true,
+      AND: [
+        {
+          OR: [
+            { name: { contains: "air" } },
+            { description: { contains: "air" } },
+            {
+              category: {
+                name: { contains: "air" },
+              },
+            },
+          ],
         },
       ],
     });
