@@ -20,7 +20,8 @@ Hien tai app da co:
 - `next@16`
 - `react@19`
 - `prisma`
-- `sqlite`
+- `postgresql`
+- `docker compose`
 - `vitest`
 - `eslint`
 
@@ -32,12 +33,16 @@ Hien tai app da co:
 npm install
 ```
 
-2. Dam bao may da co `sqlite3` CLI vi `npm run db:migrate` hien shell-out truc tiep sang lenh nay.
-
-3. Tao file env tu template:
+2. Tao file env tu template:
 
 ```bash
 cp .env.example .env
+```
+
+3. Khoi dong local Postgres bang Docker:
+
+```bash
+npm run db:up
 ```
 
 4. Tao lai demo database + seed:
@@ -59,7 +64,7 @@ npm run dev
 `.env.example` hien dung dung cac bien app dang doc:
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/minishop?schema=public"
 NEXT_PUBLIC_SITE_URL="http://localhost:3000"
 AUTH_SECRET="replace-me-with-a-long-random-string"
 ```
@@ -67,10 +72,11 @@ AUTH_SECRET="replace-me-with-a-long-random-string"
 Ghi chu:
 
 - `DATABASE_URL` la bat buoc cho Prisma.
+- Local mac dinh tro vao Postgres container tu `docker-compose.yml`; production phai tro vao external Postgres.
 - `NEXT_PUBLIC_SITE_URL` nen luon duoc set; local dung `http://localhost:3000`, production dung domain that.
 - `AUTH_SECRET` la bat buoc de ky/xac thuc session token phia server. Dev co the dung chuoi dai ngau nhien; production can dat secret rieng, khong commit.
 - `.env.example` da kem production examples cho `DATABASE_URL`, `NEXT_PUBLIC_SITE_URL`, `AUTH_SECRET`.
-- Repo hien van dung Prisma `provider = "sqlite"`, nen Postgres production hien la chien luoc deploy duoc document hoa, chua phai runtime dang impl san.
+- Neu doi hostname/user/password cho Postgres local, cap nhat lai `DATABASE_URL` trong `.env` cho khop.
 
 ## Demo flow
 
@@ -115,6 +121,8 @@ npm run verify
 npm run e2e:install
 npm run e2e:prepare
 npm run e2e
+npm run db:up
+npm run db:down
 npm run db:generate
 npm run db:migrate
 npm run db:migrate:deploy
@@ -126,11 +134,13 @@ npm run db:studio
 Luu y:
 
 - `npm run verify` chay `test + lint + build`.
-- `npm run e2e` hien chi la `playwright test`; Playwright config tu quan ly demo DB reset + dev server cho local CI-style runs.
+- `npm run e2e` hien chi la `playwright test`; Playwright config tu quan ly demo Postgres reset + dev server cho local CI-style runs.
 - `npm run e2e:install` cai browser/deps Playwright, can thiet cho local machine/CI moi.
-- `npm run e2e:prepare` gom reset demo DB truoc E2E khi can chay thu cong ben ngoai Playwright flow.
-- `npm run db:migrate:deploy` la lenh migration discipline cho deploy; khong thay the viec chuyen datasource sang Postgres.
-- `npm run db:reset:demo` la shortcut local/demo: `db:generate -> db:migrate -> db:seed`.
+- `npm run e2e:prepare` gom reset demo DB truoc E2E khi can chay thu cong ben ngoai Playwright flow; can co Postgres local dang chay.
+- `npm run db:up` / `npm run db:down` dung de bat/tat Postgres local qua Docker Compose.
+- `npm run db:migrate` va `npm run db:reset:demo` danh cho local Postgres workflow.
+- `npm run db:migrate:deploy` la lenh migrate cho deploy/prod tren external Postgres.
+- `npm run db:reset:demo` la shortcut local/demo: reset schema + apply migrations + seed lai toan bo demo data.
 - `npm run db:seed` dang `deleteMany()` toan bo `orderItem`, `order`, `product`, `category`, `user` roi seed lai categories/products mau.
 - Neu can giu du lieu local, khong chay seed bua truoc khi backup.
 
@@ -199,9 +209,10 @@ Xem them tai `docs/deploy/production-readiness.md`.
   - `DATABASE_URL`
   - `NEXT_PUBLIC_SITE_URL`
   - `AUTH_SECRET`
-- Neu deploy len domain that, dat `NEXT_PUBLIC_SITE_URL` dung domain do, khong de `localhost`.
+- Production tren Vercel phai dung external Postgres; khong co local database bundled/phu hop cho runtime production.
+- Dat `NEXT_PUBLIC_SITE_URL` bang domain production day du, vi du `https://minishop.example.com`; khong de `localhost`.
+- Dat `AUTH_SECRET` bang secret dai, ngau nhien, rieng cho tung environment; khong reuse gia tri demo.
 - Vi app co `robots.txt`, `sitemap.xml`, Open Graph/canonical dua tren helper SEO, thieu `NEXT_PUBLIC_SITE_URL` o production se lam cac code path SEO can `getSiteUrl()` fail theo guard hien tai.
-- Neu tiep tuc dung SQLite tren Vercel, can kiem tra ky persistence va gioi han moi truong deploy; day hop hon cho demo/local hon la production nghiem tuc.
 
 ## Cau truc hoc phan hien tai
 
