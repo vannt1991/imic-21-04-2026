@@ -67,6 +67,10 @@ export function CartProvider({ children }) {
     setItems((currentItems) => removeCartItem(currentItems, slug));
   }
 
+  function removeAllFromCart() {
+    setItems([]);
+  }
+
   return (
     <CartContext.Provider
       value={{
@@ -77,6 +81,7 @@ export function CartProvider({ children }) {
         addToCart,
         updateQuantity,
         removeFromCart,
+        removeAllFromCart,
       }}
     >
       {children}

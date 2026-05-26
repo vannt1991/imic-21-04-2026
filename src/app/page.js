@@ -1,8 +1,9 @@
 import { HeroSection } from "@/components/hero-section";
 import { FeaturedProducts } from "@/components/featured-products";
-import { featuredProducts } from "@/lib/products";
+import { getFeaturedProducts } from "@/lib/products";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const featuredProducts = await getFeaturedProducts();
   return (
     <main>
       <HeroSection />

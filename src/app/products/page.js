@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
-import { products } from "@/lib/products";
+import { getProducts } from "@/lib/products";
 
 export const metadata = {
   title: "MiniShop | Tất cả sản phẩm",
   description: "Danh sách sản phẩm tĩnh của MiniShop.",
 };
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const products = await getProducts();
   return (
     <main className="products-page">
       <section className="products-page__hero">

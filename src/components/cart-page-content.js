@@ -5,6 +5,8 @@ import { useState } from "react";
 import { useCart } from "@/components/cart-provider";
 import { formatVnd } from "@/lib/format-vnd";
 
+const SHIPPING_FEE = 30000;
+
 export function CartPageContent() {
   const {
     items,
@@ -13,7 +15,9 @@ export function CartPageContent() {
     isHydrated,
     updateQuantity,
     removeFromCart,
+    removeAllFromCart,
   } = useCart();
+  const total = subtotal + SHIPPING_FEE;
   const [draftQuantities, setDraftQuantities] = useState({});
 
   function handleQuantityChange(slug, nextValue) {
@@ -43,7 +47,11 @@ export function CartPageContent() {
     const draftQuantity = draftQuantities[slug];
     const parsedQuantity = Number(draftQuantity);
 
-    if (draftQuantity === "" || !Number.isInteger(parsedQuantity) || parsedQuantity < 1) {
+    if (
+      draftQuantity === "" ||
+      !Number.isInteger(parsedQuantity) ||
+      parsedQuantity < 1
+    ) {
       setDraftQuantities((currentDrafts) => ({
         ...currentDrafts,
         [slug]: String(fallbackQuantity),
@@ -112,8 +120,7 @@ export function CartPageContent() {
 
                 <label className="cart-line__quantity">
                   <span>
-                    Số lượng{" "}
-                    <span className="sr-only">của {item.name}</span>
+                    Số lượng <span className="sr-only">của {item.name}</span>
                   </span>
                   <input
                     type="number"
@@ -140,8 +147,16 @@ export function CartPageContent() {
                 </div>
               </article>
             ))}
+            <div className="cart-page__actions">
+              <button
+                type="button"
+                className="button button--secondary"
+                onClick={removeAllFromCart}
+              >
+                Xóa tất cả
+              </button>
+            </div>
           </div>
-
           <aside className="cart-summary">
             <p className="cart-summary__eyebrow">Tóm tắt đơn hàng</p>
             <h2>Tổng frontend của buổi 4</h2>
@@ -156,13 +171,21 @@ export function CartPageContent() {
               <strong>{formatVnd(subtotal)}</strong>
             </div>
 
-            <div className="cart-summary__row cart-summary__row--total">
+            {/* <div className="cart-summary__row cart-summary__row--total">
               <span>Tổng cộng</span>
               <strong>{formatVnd(subtotal)}</strong>
-            </div>
+            </div> */}
 
             <p className="cart-summary__note">
-              Chưa có shipping fee hay checkout backend ở milestone này.
+              <div className="cart-summary__row">
+                <span>Phí vận chuyển</span>
+                <strong>{formatVnd(SHIPPING_FEE)}</strong>
+              </div>
+
+              <div className="cart-summary__row cart-summary__row--total">
+                <span>Tổng cộng</span>
+                <strong>{formatVnd(total)}</strong>
+              </div>
             </p>
 
             <Link href="/products" className="button button--secondary">
