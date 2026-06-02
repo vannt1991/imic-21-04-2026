@@ -50,6 +50,34 @@ const products = [
     featured: true,
     categorySlug: "outdoor",
   },
+  {
+    name: "Puma RS-X3",
+    slug: "puma-rs-x3",
+    description:
+      "Đôi giày lifestyle với thiết kế retro và màu sắc nổi bật, phù hợp cho những ai yêu thích phong cách thời trang đường phố.",
+    badge: "On sale",
+    originalPrice: 2000000,
+    price: 1500000,
+    image: null,
+    note: "Sản phẩm đang được giảm giá, là lựa chọn hoàn hảo cho những ai muốn sở hữu một đôi giày thời trang với mức giá hợp lý.",
+    stock: 20,
+    featured: false,
+    categorySlug: "lifestyle",
+  },
+  {
+    name: "New Balance 990v5",
+    slug: "new-balance-990v5",
+    description:
+      "Đôi giày lifestyle với thiết kế cổ điển và chất liệu cao cấp, mang lại sự thoải mái và phong cách vượt thời gian.",
+    badge: null,
+    originalPrice: 2500000,
+    price: 2500000,
+    image: null,
+    note: "Sản phẩm này là biểu tượng của sự kết hợp giữa phong cách cổ điển và chất lượng cao, phù hợp cho những ai yêu thích sự đơn giản nhưng tinh tế.",
+    stock: 12,
+    featured: false,
+    categorySlug: "lifestyle",
+  },
 ];
 
 async function main() {
