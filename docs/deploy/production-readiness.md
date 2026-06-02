@@ -2,10 +2,10 @@
 
 ## 1. What stays local/demo-only
 
-- `npm run db:migrate` is destructive and SQLite-specific.
-- `npm run db:reset:demo` is for local/demo resets only and shells out to `sqlite3`.
-- `npm run db:seed` rewrites demo data; do not run it against real customer data.
-- The repo still uses Prisma `provider = "sqlite"` today, so Postgres is a documented rollout strategy, not the current runtime.
+- `npm run db:reset:demo` is destructive and local-only. It drops and recreates the local demo schema before reseeding.
+- `npm run db:seed` is destructive and local-only. It rewrites demo users, categories, and products, and clears any local orders before reseeding.
+- `docker-compose.yml` is local-only infra for the Postgres container used during development and smoke testing.
+- `npm run db:migrate` is the local developer migration workflow. Do not point it at a shared/staging/production database.
 
 ## 2. Required environment variables
 
@@ -16,6 +16,7 @@ AUTH_SECRET="use-a-long-random-secret-per-environment"
 ```
 
 - `DATABASE_URL` is required by Prisma and all DB-backed render/build paths.
+- In every environment, `DATABASE_URL` must point at a Postgres instance.
 - `NEXT_PUBLIC_SITE_URL` is required for canonical URLs, Open Graph URLs, `robots.txt`, and `sitemap.xml`.
 - `AUTH_SECRET` is required for session token signing and cookie validation.
 
@@ -24,6 +25,8 @@ AUTH_SECRET="use-a-long-random-secret-per-environment"
 ```bash
 npm install
 cp .env.example .env
+npm run db:up
+# wait for Postgres to be healthy/ready, e.g. `docker compose ps`
 npm run db:reset:demo
 npm run dev
 ```
@@ -32,32 +35,35 @@ Use this flow for teaching, local debugging, and CI-style smoke-test prep.
 
 ## 4. Production DB strategy
 
-- Keep SQLite for course delivery and local demo speed.
-- For a real deployment, create a dedicated Postgres rollout branch or worktree.
-- In that Postgres rollout branch:
-  - change Prisma datasource provider from `sqlite` to `postgresql`
-  - point `DATABASE_URL` at the real Postgres instance
-  - create a fresh initial Postgres migration history
-  - use `npm run db:migrate:deploy` for later schema changes
-- Do not assume the existing SQLite migration SQL can be replayed on Postgres unchanged.
+- Provision an external Postgres database for every deployed environment.
+- Set `DATABASE_URL` to that external Postgres instance before build/deploy steps run.
+- Apply schema changes in deploy pipelines with `npm run db:migrate:deploy`.
+- Do not run `docker-compose.yml`, `npm run db:reset:demo`, or `npm run db:seed` against production data.
 
 ## 5. Pre-deploy checklist
 
 ```bash
 npm run verify
-E2E_BASE_URL="https://minishop.example.com" npm run e2e
+# Only when the target env was prepared with the demo seed data + demo creds
+E2E_BASE_URL="https://preview.minishop.example.com" npm run e2e
 ```
 
 Manual checks:
 
 - Visit `/`, `/products`, `/products/[slug]`, `/cart`, `/checkout`, `/login`, and `/admin`.
 - Confirm anonymous `/admin` redirects to `/login?next=/admin`.
-- Log in with the seeded admin account and confirm `/admin` loads.
+- Confirm admin access works via your production bootstrap/provisioning path, using a separately created admin user instead of demo seed credentials.
 - Complete one checkout flow and confirm redirect to `/order-success?orderId=...`.
 - Open `/robots.txt` and `/sitemap.xml` under the real domain.
 
+E2E note:
+
+- The current Playwright smoke suite assumes demo-seeded catalog data and the seeded demo admin account (`admin@minishop.local` / `admin123`).
+- Treat `E2E_BASE_URL=... npm run e2e` as a staging/preview smoke path, or only run it against environments intentionally prepared with those demo fixtures.
+- Do not treat the current smoke suite as a generic production-safe validation step for arbitrary real environments.
+
 ## 6. CI expectations
 
-- `.github/workflows/ci.yml` should install `sqlite3`, rebuild the demo DB, and run `test`, `lint`, `build`, and `e2e`.
-- `npm run e2e` is plain `playwright test`. Without `E2E_BASE_URL`, Playwright self-manages the demo DB reset and local dev server; with `E2E_BASE_URL`, it targets the already-running deployment instead.
+- `.github/workflows/ci.yml` should boot Postgres, set a Postgres `DATABASE_URL`, rebuild the demo DB, and run `test`, `lint`, `build`, and `e2e`.
+- `npm run e2e` is plain `playwright test`. Without `E2E_BASE_URL`, Playwright self-manages the local Postgres demo DB reset and dev server, using repo-local `.env` `DATABASE_URL` when present and otherwise falling back to the default local DSN. With `E2E_BASE_URL`, it targets the already-running environment instead.
 - Keep smoke coverage small; add cases only when a regression escaped lower-level tests.

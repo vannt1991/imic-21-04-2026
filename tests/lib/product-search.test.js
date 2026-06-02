@@ -87,11 +87,11 @@ describe("product search helpers", () => {
       AND: [
         {
           OR: [
-            { name: { contains: "trail" } },
-            { description: { contains: "trail" } },
+            { name: { contains: "trail", mode: "insensitive" } },
+            { description: { contains: "trail", mode: "insensitive" } },
             {
               category: {
-                name: { contains: "trail" },
+                name: { contains: "trail", mode: "insensitive" },
               },
             },
           ],
@@ -105,7 +105,7 @@ describe("product search helpers", () => {
     });
   });
 
-  it("builds SQLite-safe keyword filters without Prisma mode flags", () => {
+  it("builds case-insensitive keyword filters for Postgres", () => {
     expect(
       buildProductWhere({
         q: "air",
@@ -117,11 +117,11 @@ describe("product search helpers", () => {
       AND: [
         {
           OR: [
-            { name: { contains: "air" } },
-            { description: { contains: "air" } },
+            { name: { contains: "air", mode: "insensitive" } },
+            { description: { contains: "air", mode: "insensitive" } },
             {
               category: {
-                name: { contains: "air" },
+                name: { contains: "air", mode: "insensitive" },
               },
             },
           ],

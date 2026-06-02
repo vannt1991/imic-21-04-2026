@@ -26,7 +26,6 @@ test-results/
 .DS_Store
 *.pem
 .worktrees/
-prisma/dev.db*
 
 # debug
 npm-debug.log*

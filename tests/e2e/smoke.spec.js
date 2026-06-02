@@ -26,7 +26,7 @@ test("admin can log in and reach the dashboard", async ({ page }) => {
 });
 
 test("catalog search and checkout happy path still work", async ({ page }) => {
-  await page.goto("/products?q=air");
+  await page.goto("/products?q=AIR");
 
   await expect(
     page.getByRole("heading", { name: "Air Runner Basic" }),

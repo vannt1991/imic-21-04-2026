@@ -64,11 +64,16 @@ export function buildProductWhere(filters) {
   const and = [];
 
   if (filters.q) {
+    const keywordFilter = {
+      contains: filters.q,
+      mode: "insensitive",
+    };
+
     and.push({
       OR: [
-        { name: { contains: filters.q } },
-        { description: { contains: filters.q } },
-        { category: { name: { contains: filters.q } } },
+        { name: keywordFilter },
+        { description: keywordFilter },
+        { category: { name: keywordFilter } },
       ],
     });
   }
