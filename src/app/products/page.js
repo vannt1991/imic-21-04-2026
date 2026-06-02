@@ -9,6 +9,7 @@ export const metadata = {
 
 export default async function ProductsPage() {
   const products = await getProducts();
+
   return (
     <main className="products-page">
       <section className="products-page__hero">
@@ -16,8 +17,8 @@ export default async function ProductsPage() {
           <p className="products-page__eyebrow">Product listing</p>
           <h1>Tất cả sản phẩm</h1>
           <p className="products-page__description">
-            Trang này dùng cùng data với homepage để học cách render list bằng
-            `map()` và component tái sử dụng.
+            Trang này đọc trực tiếp từ database để học cách tách data layer
+            khỏi UI layer.
           </p>
 
           <Link href="/" className="button button--secondary">

@@ -1,22 +1,28 @@
+import {
+  handleProductRouteError,
+  jsonError,
+} from "@/lib/api-response";
 import { db } from "@/lib/db";
-import { handleRouteError, jsonError } from "@/lib/api-response";
-import { toProductApiModel, toProductCreateData } from "@/lib/product-api";
+import {
+  productCreateSchema,
+  toProductApiModel,
+  toProductCreateData,
+} from "@/lib/product-api";
+
+function isForeignKeyConstraintError(error) {
+  return error?.code === "P2003";
+}
 
 export async function GET() {
   try {
     const products = await db.product.findMany({
-      where: { isActive: true },
-      include: {
-        category: true,
-      },
+      include: { category: true },
       orderBy: { createdAt: "desc" },
     });
 
-    return Response.json({
-      products: products.map(toProductApiModel),
-    });
+    return Response.json(products.map(toProductApiModel));
   } catch (error) {
-    return handleRouteError(error);
+    return handleProductRouteError(error);
   }
 }
 
@@ -29,21 +35,20 @@ export async function POST(request) {
     });
 
     if (!category) {
-      return jsonError("Category not found", 400);
+      return jsonError("Category not found.", 404);
     }
-    const newProduct = await db.product.create({
+
+    const product = await db.product.create({
       data: toProductCreateData(payload, category.id),
+      include: { category: true },
     });
 
-    return Response.json(
-      {
-        product: toProductApiModel(newProduct),
-      },
-      {
-        status: 201,
-      },
-    );
+    return Response.json(toProductApiModel(product), { status: 201 });
   } catch (error) {
-    return handleRouteError(error);
+    if (isForeignKeyConstraintError(error)) {
+      return jsonError("Category not found.", 404);
+    }
+
+    return handleProductRouteError(error);
   }
 }

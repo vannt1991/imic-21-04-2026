@@ -4,6 +4,7 @@ import { getFeaturedProducts } from "@/lib/products";
 
 export default async function HomePage() {
   const featuredProducts = await getFeaturedProducts();
+
   return (
     <main>
       <HeroSection />

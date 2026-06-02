@@ -1,40 +1,79 @@
 import { Prisma } from "@prisma/client";
 import { ZodError } from "zod";
 
-export function jsonError(message, status = 400, details) {
-  return Response.json(
-    details ? { error: { message, details } } : { error: { message } },
-    {
-      status,
-    },
-  );
-}
+export function jsonError(message, status, details) {
+  const body = { error: { message } };
 
-export function jsonSuccess(data, status = 200) {
-  return Response.json(data, {
-    status,
-  });
-}
-
-export function formatZodIssue(error) {
-  return error.issues.map((issue) => {
-    const path = issue.path.join(".");
-    return `${path}: ${issue.message}`;
-  });
-}
-
-export function handleRouteError(error) {
-  if (error instanceof SyntaxError) {
-    return jsonError("Invalid JSON", 400);
+  if (details !== undefined) {
+    body.error.details = details;
   }
 
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
-    return jsonError(error.message, 400);
-  }
-  if (error instanceof ZodError) {
-    return jsonError("Invalid request data", 400, formatZodIssue(error));
+  return Response.json(body, { status });
+}
+
+function formatZodIssues(error) {
+  return error.issues.map((issue) => ({
+    path: issue.path.length > 0 ? issue.path.join(".") : "root",
+    message: issue.message,
+  }));
+}
+
+function isJsonParseError(error) {
+  if (!(error instanceof SyntaxError)) {
+    return false;
   }
 
-  console.error(error);
-  return jsonError("Internal server error", 500);
+  if (typeof error.message !== "string") {
+    return false;
+  }
+
+  const message = error.message.toLowerCase();
+
+  return message.includes("json") || message.includes("unexpected token");
+}
+
+export const productRouteErrorOptions = Object.freeze({
+  conflictMessage: "Product slug must be unique.",
+  notFoundMessage: "Product not found.",
+  treatJsonSyntaxErrorAsBadRequest: true,
+});
+
+export function createRouteErrorHandler(options = {}) {
+  const {
+    conflictMessage = "Conflict.",
+    notFoundMessage = "Resource not found.",
+    treatJsonSyntaxErrorAsBadRequest = false,
+  } = options;
+
+  return function routeErrorHandler(error) {
+    if (treatJsonSyntaxErrorAsBadRequest && isJsonParseError(error)) {
+      return jsonError("Request body must be valid JSON.", 400);
+    }
+
+    if (error instanceof ZodError) {
+      return jsonError("Validation failed.", 400, formatZodIssues(error));
+    }
+
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        return jsonError(conflictMessage, 409);
+      }
+
+      if (error.code === "P2025") {
+        return jsonError(notFoundMessage, 404);
+      }
+    }
+
+    console.error(error);
+
+    return jsonError("Internal server error.", 500);
+  };
+}
+
+export function handleRouteError(error, options = {}) {
+  return createRouteErrorHandler(options)(error);
+}
+
+export function handleProductRouteError(error) {
+  return handleRouteError(error, productRouteErrorOptions);
 }

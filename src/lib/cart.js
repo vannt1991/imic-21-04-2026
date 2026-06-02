@@ -80,23 +80,44 @@ export function parseStoredCart(value) {
       return [];
     }
 
-    return parsed
-      .filter(
-        (item) =>
-          item &&
-          typeof item.slug === "string" &&
-          typeof item.name === "string" &&
-          typeof item.price === "number" &&
-          Number.isFinite(item.price) &&
-          item.price >= 0,
-      )
-      .map((item) => ({
-        slug: item.slug,
-        name: item.name,
-        price: item.price,
-        badge: typeof item.badge === "string" ? item.badge : "",
-        quantity: sanitizeQuantity(item.quantity),
-      }));
+    const itemsBySlug = new Map();
+
+    for (const item of parsed) {
+      if (
+        !item ||
+        typeof item.slug !== "string" ||
+        typeof item.name !== "string" ||
+        typeof item.price !== "number" ||
+        !Number.isFinite(item.price) ||
+        item.price < 0
+      ) {
+        continue;
+      }
+
+      const slug = item.slug.trim();
+
+      if (!slug) {
+        continue;
+      }
+
+      const quantity = sanitizeQuantity(item.quantity);
+      const existingItem = itemsBySlug.get(slug);
+
+      if (!existingItem) {
+        itemsBySlug.set(slug, {
+          slug,
+          name: item.name,
+          price: item.price,
+          badge: typeof item.badge === "string" ? item.badge : "",
+          quantity,
+        });
+        continue;
+      }
+
+      existingItem.quantity += quantity;
+    }
+
+    return Array.from(itemsBySlug.values());
   } catch {
     return [];
   }
@@ -104,4 +125,22 @@ export function parseStoredCart(value) {
 
 export function serializeCart(items) {
   return JSON.stringify(items);
+}
+
+export function toCheckoutItems(items) {
+  return items.reduce((checkoutItems, item) => {
+    if (!item || typeof item.slug !== "string" || !Number.isInteger(item.quantity)) {
+      return checkoutItems;
+    }
+
+    const slug = item.slug.trim();
+    const quantity = item.quantity;
+
+    if (!slug || quantity < 1) {
+      return checkoutItems;
+    }
+
+    checkoutItems.push({ slug, quantity });
+    return checkoutItems;
+  }, []);
 }

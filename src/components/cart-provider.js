@@ -67,7 +67,7 @@ export function CartProvider({ children }) {
     setItems((currentItems) => removeCartItem(currentItems, slug));
   }
 
-  function removeAllFromCart() {
+  function clearCart() {
     setItems([]);
   }
 
@@ -81,7 +81,7 @@ export function CartProvider({ children }) {
         addToCart,
         updateQuantity,
         removeFromCart,
-        removeAllFromCart,
+        clearCart,
       }}
     >
       {children}
