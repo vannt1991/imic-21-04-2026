@@ -1,4 +1,19 @@
+import fs from "node:fs";
+import path from "node:path";
 import { PrismaClient } from "@prisma/client";
+import { hashPassword } from "../src/lib/passwords.js";
+
+if (!process.env.DATABASE_URL) {
+  const envPath = path.resolve(".env");
+  if (fs.existsSync(envPath)) {
+    const envFile = fs.readFileSync(envPath, "utf8");
+    const match = envFile.match(/^DATABASE_URL=(["']?)(.+)\1$/m);
+    if (match) {
+      process.env.DATABASE_URL = match[2];
+    }
+  }
+}
+
 const db = new PrismaClient();
 
 const categories = [
@@ -9,117 +24,201 @@ const categories = [
 
 const products = [
   {
-    name: "Nike Air Zoom Pegasus 39",
-    slug: "nike-air-zoom-pegasus-39",
-    description:
-      "Đôi giày chạy bộ đa năng với thiết kế thoáng khí và đệm êm ái, phù hợp cho cả người mới bắt đầu và vận động viên chuyên nghiệp.",
-    badge: "Best seller",
-    originalPrice: 2500000,
-    price: 2000000,
-    image: null,
-    note: "Đây là sản phẩm bán chạy nhất của chúng tôi, được nhiều khách hàng yêu thích vì sự thoải mái và độ bền cao.",
-    stock: 10,
-    featured: true,
+    slug: "air-runner-basic",
+    name: "Air Runner Basic",
     categorySlug: "running",
-  },
-  {
-    name: "Adidas Ultraboost 22",
-    slug: "adidas-ultraboost-22",
-    description:
-      "Đôi giày chạy bộ cao cấp với công nghệ Boost mang lại sự phản hồi năng lượng tuyệt vời và thiết kế thời trang.",
-    badge: "New arrival",
-    originalPrice: 3000000,
-    price: 2800000,
+    description: "Mẫu sneaker gọn nhẹ, phù hợp cho buổi học đầu tiên.",
+    price: 1290000,
+    originalPrice: 1490000,
     image: null,
-    note: "Sản phẩm mới ra mắt với thiết kế hiện đại và công nghệ tiên tiến, mang đến trải nghiệm chạy bộ tuyệt vời.",
-    stock: 15,
-    featured: true,
-    categorySlug: "running",
-  },
-  {
-    name: "Salomon Speedcross 5",
-    slug: "salomon-speedcross-5",
-    description:
-      "Đôi giày chạy trail với độ bám tuyệt vời và thiết kế chắc chắn, lý tưởng cho những địa hình khó khăn.",
-    badge: "Top rated",
-    originalPrice: 3500000,
-    price: 3200000,
-    image: null,
-    note: "Được đánh giá cao bởi cộng đồng chạy trail, sản phẩm này mang lại sự ổn định và độ bám vượt trội trên mọi địa hình.",
-    stock: 8,
-    featured: true,
-    categorySlug: "outdoor",
-  },
-  {
-    name: "Puma RS-X3",
-    slug: "puma-rs-x3",
-    description:
-      "Đôi giày lifestyle với thiết kế retro và màu sắc nổi bật, phù hợp cho những ai yêu thích phong cách thời trang đường phố.",
-    badge: "On sale",
-    originalPrice: 2000000,
-    price: 1500000,
-    image: null,
-    note: "Sản phẩm đang được giảm giá, là lựa chọn hoàn hảo cho những ai muốn sở hữu một đôi giày thời trang với mức giá hợp lý.",
-    stock: 20,
-    featured: false,
-    categorySlug: "lifestyle",
-  },
-  {
-    name: "New Balance 990v5",
-    slug: "new-balance-990v5",
-    description:
-      "Đôi giày lifestyle với thiết kế cổ điển và chất liệu cao cấp, mang lại sự thoải mái và phong cách vượt thời gian.",
-    badge: null,
-    originalPrice: 2500000,
-    price: 2500000,
-    image: null,
-    note: "Sản phẩm này là biểu tượng của sự kết hợp giữa phong cách cổ điển và chất lượng cao, phù hợp cho những ai yêu thích sự đơn giản nhưng tinh tế.",
+    badge: "Bestseller",
+    note: "Dễ phối đồ",
     stock: 12,
-    featured: false,
+    featured: true,
+    isActive: true,
+  },
+  {
+    slug: "street-flex-pro",
+    name: "Street Flex Pro",
     categorySlug: "lifestyle",
+    description: "Thiết kế nổi bật hơn, hợp với phong cách streetwear.",
+    price: 1890000,
+    originalPrice: null,
+    image: null,
+    badge: "New",
+    note: "Phối outfit nhanh",
+    stock: 9,
+    featured: true,
+    isActive: true,
+  },
+  {
+    slug: "court-classic-white",
+    name: "Court Classic White",
+    categorySlug: "lifestyle",
+    description: "Một đôi basic sạch, đơn giản, dễ dùng hằng ngày.",
+    price: 990000,
+    originalPrice: 1190000,
+    image: null,
+    badge: "Sale",
+    note: "Giá dễ tiếp cận",
+    stock: 16,
+    featured: true,
+    isActive: true,
+  },
+  {
+    slug: "trail-guard-mid",
+    name: "Trail Guard Mid",
+    categorySlug: "outdoor",
+    description: "Bản mid-top chắc chân cho những buổi đi bộ cuối tuần.",
+    price: 1590000,
+    originalPrice: null,
+    image: null,
+    badge: "Sold out",
+    note: "Hết hàng tạm thời",
+    stock: 0,
+    featured: false,
+    isActive: true,
+  },
+  {
+    slug: "sprint-core-grey",
+    name: "Sprint Core Grey",
+    categorySlug: "running",
+    description: "Dòng chạy bộ cơ bản cho học viên cần một ví dụ mới.",
+    price: 1190000,
+    originalPrice: null,
+    image: null,
+    badge: "Core",
+    note: "Nhẹ, dễ dùng",
+    stock: 11,
+    featured: false,
+    isActive: true,
+  },
+  {
+    slug: "urban-flow-black",
+    name: "Urban Flow Black",
+    categorySlug: "lifestyle",
+    description: "Tông đen tối giản cho layout sản phẩm thêm đa dạng.",
+    price: 1390000,
+    originalPrice: 1690000,
+    image: null,
+    badge: "Sale",
+    note: "Phối nhanh với mọi outfit",
+    stock: 8,
+    featured: false,
+    isActive: true,
+  },
+  {
+    slug: "trail-peak-olive",
+    name: "Trail Peak Olive",
+    categorySlug: "outdoor",
+    description: "Mẫu outdoor để demo category khác với lifestyle/running.",
+    price: 1790000,
+    originalPrice: null,
+    image: null,
+    badge: "Trail",
+    note: "Đế bám tốt",
+    stock: 6,
+    featured: false,
+    isActive: true,
+  },
+  {
+    slug: "retro-court-navy",
+    name: "Retro Court Navy",
+    categorySlug: "lifestyle",
+    description: "Phong cách retro, hợp để minh họa product detail.",
+    price: 1490000,
+    originalPrice: 1790000,
+    image: null,
+    badge: "Retro",
+    note: "Phối đồ cổ điển",
+    stock: 7,
+    featured: false,
+    isActive: true,
+  },
+  {
+    slug: "flex-knit-sand",
+    name: "Flex Knit Sand",
+    categorySlug: "running",
+    description: "Upper knit mềm, nhẹ, hợp demo material khác nhau.",
+    price: 1590000,
+    originalPrice: null,
+    image: null,
+    badge: "Knit",
+    note: "Thoáng khí",
+    stock: 10,
+    featured: false,
+    isActive: true,
+  },
+  {
+    slug: "metro-lace-white",
+    name: "Metro Lace White",
+    categorySlug: "lifestyle",
+    description: "Một sản phẩm trắng cơ bản để lấp đầy catalog seed.",
+    price: 1090000,
+    originalPrice: null,
+    image: null,
+    badge: "Basic",
+    note: "Dễ phối, dễ dạy",
+    stock: 14,
+    featured: false,
+    isActive: true,
+  },
+];
+
+const users = [
+  {
+    name: "MiniShop Admin",
+    email: "admin@minishop.local",
+    password: "admin123",
+    role: "ADMIN",
+  },
+  {
+    name: "MiniShop Customer",
+    email: "customer@minishop.local",
+    password: "customer123",
+    role: "CUSTOMER",
   },
 ];
 
 async function main() {
-  console.log("Cleaning database...");
-  db.orderItem.deleteMany();
-  db.order.deleteMany();
-  db.product.deleteMany();
-  db.category.deleteMany();
-  db.user.deleteMany();
+  await db.session.deleteMany();
+  await db.orderItem.deleteMany();
+  await db.order.deleteMany();
+  await db.product.deleteMany();
+  await db.category.deleteMany();
+  await db.user.deleteMany();
 
-  console.log("Seeding database...");
-  for (const category of categories) {
-    await db.category.upsert({
-      where: { slug: category.slug },
-      update: {},
-      create: category,
-    });
-  }
+  await db.category.createMany({ data: categories });
 
-  for (const product of products) {
-    const categorySlug = product.categorySlug;
-    delete product.categorySlug;
-    await db.product.upsert({
-      where: { slug: product.slug },
-      update: {},
-      create: {
-        ...product,
-        category: {
-          connect: { slug: categorySlug },
-        },
-      },
-    });
-  }
+  const categoryRows = await db.category.findMany({
+    select: { id: true, slug: true },
+  });
+  const categoryMap = new Map(
+    categoryRows.map((category) => [category.slug, category.id]),
+  );
 
-  console.log("Database seeded successfully.");
+  await db.product.createMany({
+    data: products.map(({ categorySlug, ...product }) => ({
+      ...product,
+      categoryId: categoryMap.get(categorySlug),
+    })),
+  });
+
+  await db.user.createMany({
+    data: await Promise.all(
+      users.map(async ({ password, ...user }) => ({
+        ...user,
+        passwordHash: await hashPassword(password),
+      })),
+    ),
+  });
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
+  .catch((error) => {
+    console.error(error);
     process.exit(1);
   })
-  .finally(() => {
-    db.$disconnect();
+  .finally(async () => {
+    await db.$disconnect();
   });
