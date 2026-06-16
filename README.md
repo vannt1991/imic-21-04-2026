@@ -14,6 +14,13 @@ pnpm dev
 bun dev
 ```
 
+Init and migration DB
+```
+npx prisma generate
+npx prisma migrate dev --name init
+npm run db:seed
+```
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
