@@ -2,6 +2,7 @@ import Link from "next/link";
 import { formatVnd } from "@/lib/format-vnd";
 import { getOrderStatusLabel } from "@/lib/admin-order-status";
 import { getAdminOrders } from "@/lib/admin-orders";
+import { requireAdminUser } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,7 @@ export const metadata = {
 };
 
 export default async function AdminOrdersPage() {
+  await requireAdminUser({ nextPath: "/admin/orders" });
   const orders = await getAdminOrders();
 
   return (

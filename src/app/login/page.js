@@ -14,9 +14,7 @@ function readStringParam(params, key) {
 export default async function LoginPage({ searchParams }) {
   const params = await searchParams;
   const currentUser = await getCurrentUser();
-  const nextPath = sanitizeNextPath(
-    readStringParam(params, "next") || "/admin",
-  );
+  const nextPath = sanitizeNextPath(readStringParam(params, "next") || "/admin");
   const errorMessage = readStringParam(params, "error");
   const email = readStringParam(params, "email");
 
@@ -32,9 +30,8 @@ export default async function LoginPage({ searchParams }) {
 
         {currentUser ? (
           <p className="login-card__session" role="status">
-            Phiên hiện tại:{" "}
-            <strong>{currentUser.name ?? currentUser.email}</strong> (
-            {currentUser.role})
+            Phiên hiện tại: <strong>{currentUser.name ?? currentUser.email}</strong>{" "}
+            ({currentUser.role})
           </p>
         ) : null}
 

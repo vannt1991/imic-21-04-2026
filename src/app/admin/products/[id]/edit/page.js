@@ -1,10 +1,9 @@
 import { notFound } from "next/navigation";
 import { AdminProductForm } from "@/components/admin-product-form";
+import { getAdminCategories } from "@/lib/admin-categories";
 import { toProductFormValues } from "@/lib/admin-product-form";
-import {
-  getAdminCategories,
-  getAdminProductById,
-} from "@/lib/admin-products";
+import { getAdminProductById } from "@/lib/admin-products";
+import { requireAdminUser } from "@/lib/auth";
 import { updateProductAction } from "../../actions";
 
 export const metadata = {
@@ -26,6 +25,7 @@ function readBooleanParam(params, key, fallback) {
 
 export default async function EditAdminProductPage({ params, searchParams }) {
   const { id } = await params;
+  await requireAdminUser({ nextPath: `/admin/products/${id}/edit` });
   const resolvedSearchParams = await searchParams;
   const [product, categories] = await Promise.all([
     getAdminProductById(id),

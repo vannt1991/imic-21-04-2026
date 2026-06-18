@@ -39,9 +39,7 @@ function resolvePostLoginPath(user, nextPath) {
 export async function loginAction(formData) {
   const email = getTrimmedValue(formData, "email").toLowerCase();
   const password = getTrimmedValue(formData, "password");
-  const nextPath = sanitizeNextPath(
-    getTrimmedValue(formData, "next") || "/admin",
-  );
+  const nextPath = sanitizeNextPath(getTrimmedValue(formData, "next") || "/admin");
 
   const user = await db.user.findUnique({
     where: { email },

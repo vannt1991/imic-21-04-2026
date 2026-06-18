@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { jsonError } from "@/lib/api-response";
 import { db } from "@/lib/db";
+import { readRequiredEnv } from "@/lib/env";
 
 export const SESSION_COOKIE_NAME = "minishop-session";
 export const ROLE_ADMIN = "ADMIN";
@@ -10,15 +11,9 @@ export const ROLE_CUSTOMER = "CUSTOMER";
 export const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 
 function getAuthSecret() {
-  if (process.env.AUTH_SECRET) {
-    return process.env.AUTH_SECRET;
-  }
-
-  if (process.env.NODE_ENV === "test") {
-    return "test-auth-secret";
-  }
-
-  throw new Error("AUTH_SECRET is required.");
+  return readRequiredEnv("AUTH_SECRET", {
+    fallbackInTest: "test-auth-secret",
+  });
 }
 
 function getSessionCookieOptions(expiresAt) {

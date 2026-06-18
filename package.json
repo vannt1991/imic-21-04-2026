@@ -12,9 +12,11 @@
     "db:init": "prisma migrate dev --name init",
     "db:seed": "node prisma/seed.js",
     "db:reset": "prisma migrate reset --force && npm run db:seed",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
+    "prisma": "^6.19.3",
     "@prisma/client": "^6.19.3",
     "next": "16.2.6",
     "react": "19.2.4",
@@ -26,7 +28,6 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
-    "prisma": "^6.19.3",
     "tailwindcss": "^4"
   }
 }

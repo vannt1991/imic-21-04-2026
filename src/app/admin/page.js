@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { requireAdminUser } from "@/lib/auth";
 
-export default function AdminHomePage() {
+export default async function AdminHomePage() {
+  await requireAdminUser({ nextPath: "/admin" });
+
   return (
     <main className="admin-page">
       <section className="admin-page__hero">
@@ -21,6 +24,14 @@ export default function AdminHomePage() {
         <Link href="/admin/products/new" className="admin-shortcut-card">
           <h2>Tạo sản phẩm mới</h2>
           <p>Submit form trực tiếp vào Server Action rồi quay lại trang list.</p>
+        </Link>
+
+        <Link href="/admin/categories" className="admin-shortcut-card">
+          <h2>Quản lý category</h2>
+          <p>
+            Tạo, sửa, xóa category và kiểm tra relation với products trước khi
+            delete.
+          </p>
         </Link>
 
         <Link href="/admin/orders" className="admin-shortcut-card">
