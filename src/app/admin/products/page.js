@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { DeleteProductButton } from "@/components/delete-product-button";
+import { ProductImage } from "@/components/product-image";
 import { formatVnd } from "@/lib/format-vnd";
 import { getAdminProducts } from "@/lib/admin-products";
 import { requireAdminUser } from "@/lib/auth";
@@ -25,7 +26,8 @@ export default async function AdminProductsPage({ searchParams }) {
           <p className="admin-page__eyebrow">Product CRUD</p>
           <h1>Quản lý sản phẩm</h1>
           <p className="admin-page__description">
-            Tạo, sửa, xóa sản phẩm bằng Server Action rồi đồng bộ lại storefront.
+            Tạo, sửa, xóa sản phẩm bằng Server Action rồi đồng bộ lại
+            storefront.
           </p>
           {errorMessage ? (
             <p className="admin-page__description" role="alert">
@@ -49,7 +51,10 @@ export default async function AdminProductsPage({ searchParams }) {
             </div>
 
             <div className="admin-product-card__actions">
-              <Link href="/admin/products/new" className="button button--primary">
+              <Link
+                href="/admin/products/new"
+                className="button button--primary"
+              >
                 Tạo sản phẩm đầu tiên
               </Link>
             </div>
@@ -57,6 +62,16 @@ export default async function AdminProductsPage({ searchParams }) {
         ) : (
           products.map((product) => (
             <article key={product.id} className="admin-product-card">
+              <div className="admin-product-card__media">
+                <ProductImage
+                  src={product.image}
+                  alt={product.name}
+                  variant="admin-thumb"
+                  sizes="96px"
+                  badge={product.badge ?? ""}
+                />
+              </div>
+
               <div className="admin-product-card__copy">
                 <p className="admin-page__eyebrow">{product.category.name}</p>
                 <h2>{product.name}</h2>
@@ -66,15 +81,27 @@ export default async function AdminProductsPage({ searchParams }) {
               <dl className="admin-product-card__stats">
                 <div>
                   <dt>Giá</dt>
-                  <dd>{formatVnd(product.price)}</dd>
+                  <dd className="admin-product-card__price-group">
+                    <span className="admin-product-card__price-sale">
+                      {formatVnd(product.price)}
+                    </span>
+                    {product.originalPrice ? (
+                      <span className="admin-product-card__price-original">
+                        {formatVnd(product.originalPrice)}
+                      </span>
+                    ) : null}
+                  </dd>
                 </div>
                 <div>
                   <dt>Tồn kho</dt>
-                  <dd>{product.stock}</dd>
-                </div>
-                <div>
-                  <dt>Trạng thái</dt>
-                  <dd>{product.isActive ? "Đang bán" : "Ẩn"}</dd>
+                  <dd className="admin-product-card__stock-group">
+                    <span className="admin-product-card__stock-count">
+                      {product.stock}
+                    </span>
+                    <span className="admin-product-card__stock-status">
+                      {product.isActive ? "Đang bán" : "Ẩn"}
+                    </span>
+                  </dd>
                 </div>
               </dl>
 

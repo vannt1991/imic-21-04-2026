@@ -1,4 +1,6 @@
+import { createElement } from "react";
 import Link from "next/link";
+import { AdminProductImageField } from "@/components/admin-product-image-field";
 
 const emptyValues = {
   name: "",
@@ -15,6 +17,17 @@ const emptyValues = {
   categorySlug: "",
 };
 
+function renderField(children, key, className = "admin-field") {
+  return createElement(
+    "label",
+    {
+      key,
+      className,
+    },
+    children,
+  );
+}
+
 export function AdminProductForm({
   action,
   categories,
@@ -29,143 +42,270 @@ export function AdminProductForm({
   const hasCategories = categories.length > 0;
   const isSubmitDisabled = submitDisabled || !hasCategories;
 
-  return (
-    <main className="admin-page">
-      <section className="admin-page__hero">
-        <p className="admin-page__eyebrow">Server Action Form</p>
-        <h1>{title}</h1>
-        <p className="admin-page__description">{description}</p>
-        {errorMessage ? (
-          <p className="admin-page__description" role="alert">
-            {errorMessage}
-          </p>
-        ) : null}
-      </section>
-
-      <form action={action} className="admin-form">
-        <label className="admin-field">
-          <span>Tên sản phẩm</span>
-          <input name="name" defaultValue={values.name} required />
-        </label>
-
-        <label className="admin-field">
-          <span>Slug</span>
-          <input name="slug" defaultValue={values.slug} required />
-        </label>
-
-        <label className="admin-field admin-field--full">
-          <span>Mô tả</span>
-          <textarea
-            name="description"
-            rows="4"
-            defaultValue={values.description}
-            required
-          />
-        </label>
-
-        <label className="admin-field">
-          <span>Giá bán</span>
-          <input
-            type="number"
-            name="price"
-            min="0"
-            step="1"
-            defaultValue={values.price}
-            required
-          />
-        </label>
-
-        <label className="admin-field">
-          <span>Giá gốc</span>
-          <input
-            type="number"
-            name="originalPrice"
-            min="0"
-            step="1"
-            defaultValue={values.originalPrice}
-          />
-        </label>
-
-        <label className="admin-field">
-          <span>Tồn kho</span>
-          <input
-            type="number"
-            name="stock"
-            min="0"
-            step="1"
-            defaultValue={values.stock}
-            required
-          />
-        </label>
-
-        <label className="admin-field">
-          <span>Category</span>
-          <select
-            name="categorySlug"
-            defaultValue={values.categorySlug}
-            disabled={!hasCategories}
-            required={hasCategories}
-          >
-            <option value="">Chọn category</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.slug}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-          {!hasCategories ? (
-            <span>Chưa có category nào để gán cho sản phẩm mới.</span>
-          ) : null}
-        </label>
-
-        <label className="admin-field">
-          <span>Image</span>
-          <input name="image" defaultValue={values.image} />
-        </label>
-
-        <label className="admin-field">
-          <span>Badge</span>
-          <input name="badge" defaultValue={values.badge} />
-        </label>
-
-        <label className="admin-field admin-field--full">
-          <span>Note</span>
-          <textarea name="note" rows="3" defaultValue={values.note} />
-        </label>
-
-        <div className="admin-form__checkboxes">
-          <label>
-            <input
-              type="checkbox"
-              name="featured"
-              defaultChecked={values.featured}
-            />
-            <span>Hiển thị ở featured products</span>
-          </label>
-
-          <label>
-            <input
-              type="checkbox"
-              name="isActive"
-              defaultChecked={values.isActive}
-            />
-            <span>Cho phép xuất hiện ở storefront</span>
-          </label>
-        </div>
-
-        <div className="admin-form__actions">
-          <button
-            type="submit"
-            className="button button--primary"
-            disabled={isSubmitDisabled}
-          >
-            {submitLabel}
-          </button>
-          <Link href="/admin/products" className="button button--secondary">
-            Hủy
-          </Link>
-        </div>
-      </form>
-    </main>
+  return createElement(
+    "main",
+    { className: "admin-page" },
+    [
+      createElement(
+        "section",
+        {
+          key: "hero",
+          className: "admin-page__hero",
+        },
+        [
+          createElement(
+            "p",
+            { key: "eyebrow", className: "admin-page__eyebrow" },
+            "Server Action Form",
+          ),
+          createElement("h1", { key: "title" }, title),
+          createElement(
+            "p",
+            { key: "description", className: "admin-page__description" },
+            description,
+          ),
+          errorMessage
+            ? createElement(
+                "p",
+                {
+                  key: "error",
+                  className: "admin-page__description",
+                  role: "alert",
+                },
+                errorMessage,
+              )
+            : null,
+        ],
+      ),
+      createElement(
+        "form",
+        {
+          key: "form",
+          action,
+          className: "admin-form",
+        },
+        [
+          renderField(
+            [
+              createElement("span", { key: "label" }, "Tên sản phẩm"),
+              createElement("input", {
+                key: "input",
+                name: "name",
+                defaultValue: values.name,
+                required: true,
+              }),
+            ],
+            "name",
+          ),
+          renderField(
+            [
+              createElement("span", { key: "label" }, "Slug"),
+              createElement("input", {
+                key: "input",
+                name: "slug",
+                defaultValue: values.slug,
+                required: true,
+              }),
+            ],
+            "slug",
+          ),
+          renderField(
+            [
+              createElement("span", { key: "label" }, "Mô tả"),
+              createElement("textarea", {
+                key: "input",
+                name: "description",
+                rows: "4",
+                defaultValue: values.description,
+                required: true,
+              }),
+            ],
+            "description",
+            "admin-field admin-field--full",
+          ),
+          renderField(
+            [
+              createElement("span", { key: "label" }, "Giá bán"),
+              createElement("input", {
+                key: "input",
+                type: "number",
+                name: "price",
+                min: "0",
+                step: "1",
+                defaultValue: values.price,
+                required: true,
+              }),
+            ],
+            "price",
+          ),
+          renderField(
+            [
+              createElement("span", { key: "label" }, "Giá gốc"),
+              createElement("input", {
+                key: "input",
+                type: "number",
+                name: "originalPrice",
+                min: "0",
+                step: "1",
+                defaultValue: values.originalPrice,
+              }),
+            ],
+            "originalPrice",
+          ),
+          renderField(
+            [
+              createElement("span", { key: "label" }, "Tồn kho"),
+              createElement("input", {
+                key: "input",
+                type: "number",
+                name: "stock",
+                min: "0",
+                step: "1",
+                defaultValue: values.stock,
+                required: true,
+              }),
+            ],
+            "stock",
+          ),
+          renderField(
+            [
+              createElement("span", { key: "label" }, "Category"),
+              createElement(
+                "select",
+                {
+                  key: "input",
+                  name: "categorySlug",
+                  defaultValue: values.categorySlug,
+                  disabled: !hasCategories,
+                  required: hasCategories,
+                },
+                [
+                  createElement(
+                    "option",
+                    { key: "default", value: "" },
+                    "Chọn category",
+                  ),
+                  ...categories.map((category) =>
+                    createElement(
+                      "option",
+                      { key: category.id, value: category.slug },
+                      category.name,
+                    ),
+                  ),
+                ],
+              ),
+              !hasCategories
+                ? createElement(
+                    "span",
+                    { key: "hint" },
+                    "Chưa có category nào để gán cho sản phẩm mới.",
+                  )
+                : null,
+            ],
+            "category",
+          ),
+          createElement(AdminProductImageField, {
+            key: "image",
+            initialValue: values.image,
+            productName: values.name,
+          }),
+          renderField(
+            [
+              createElement("span", { key: "label" }, "Badge"),
+              createElement("input", {
+                key: "input",
+                name: "badge",
+                defaultValue: values.badge,
+              }),
+            ],
+            "badge",
+          ),
+          renderField(
+            [
+              createElement("span", { key: "label" }, "Note"),
+              createElement("textarea", {
+                key: "input",
+                name: "note",
+                rows: "3",
+                defaultValue: values.note,
+              }),
+            ],
+            "note",
+            "admin-field admin-field--full",
+          ),
+          createElement(
+            "div",
+            {
+              key: "checkboxes",
+              className: "admin-form__checkboxes",
+            },
+            [
+              createElement(
+                "label",
+                { key: "featured" },
+                [
+                  createElement("input", {
+                    key: "input",
+                    type: "checkbox",
+                    name: "featured",
+                    defaultChecked: values.featured,
+                  }),
+                  createElement(
+                    "span",
+                    { key: "text" },
+                    "Hiển thị ở featured products",
+                  ),
+                ],
+              ),
+              createElement(
+                "label",
+                { key: "isActive" },
+                [
+                  createElement("input", {
+                    key: "input",
+                    type: "checkbox",
+                    name: "isActive",
+                    defaultChecked: values.isActive,
+                  }),
+                  createElement(
+                    "span",
+                    { key: "text" },
+                    "Cho phép xuất hiện ở storefront",
+                  ),
+                ],
+              ),
+            ],
+          ),
+          createElement(
+            "div",
+            {
+              key: "actions",
+              className: "admin-form__actions",
+            },
+            [
+              createElement(
+                "button",
+                {
+                  key: "submit",
+                  type: "submit",
+                  className: "button button--primary",
+                  disabled: isSubmitDisabled,
+                },
+                submitLabel,
+              ),
+              createElement(
+                Link,
+                {
+                  key: "cancel",
+                  href: "/admin/products",
+                  className: "button button--secondary",
+                },
+                "Hủy",
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
   );
 }

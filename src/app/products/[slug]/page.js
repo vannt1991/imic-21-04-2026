@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AddToCartButton } from "@/components/add-to-cart-button";
+import { ProductImage } from "@/components/product-image";
 import {
   getProductBySlug,
   getProductSlugs,
@@ -44,8 +45,17 @@ export default async function ProductDetailPage({ params }) {
     <main className="product-detail">
       <section className="product-detail__hero">
         <div className="site-shell product-detail__grid">
-          <div className="product-detail__visual" aria-hidden="true">
-            <span className="product-detail__badge">{product.badge}</span>
+          <div className="product-detail__visual">
+            <div className="product-detail__visual-media">
+              <ProductImage
+                src={product.image}
+                alt={product.name}
+                variant="detail"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
+                badge={product.badge ?? ""}
+              />
+            </div>
             <p className="product-detail__visual-label">{product.category}</p>
           </div>
 
@@ -99,6 +109,15 @@ export default async function ProductDetailPage({ params }) {
                 key={relatedProduct.slug}
                 className="related-products__item"
               >
+                <div className="related-products__image">
+                  <ProductImage
+                    src={relatedProduct.image}
+                    alt={relatedProduct.name}
+                    variant="related"
+                    sizes="(max-width: 768px) 100vw, 20vw"
+                    badge={relatedProduct.badge ?? ""}
+                  />
+                </div>
                 <h3>{relatedProduct.name}</h3>
                 <p>{relatedProduct.category}</p>
                 <Link href={`/products/${relatedProduct.slug}`}>

@@ -99,6 +99,9 @@ function createCommonMocks() {
     "@/components/delete-category-button": {
       DeleteCategoryButton: "delete-category-button",
     },
+    "@/components/product-image": {
+      ProductImage: "product-image",
+    },
     "@/components/admin-product-form": {
       AdminProductForm: "admin-product-form",
     },
