@@ -1326,6 +1326,61 @@ select {
   padding-top: 12px;
 }
 
+.product-detail__reviews {
+  padding: 0 0 4rem;
+}
+
+.product-review-layout {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  align-items: start;
+}
+
+.product-review-panel,
+.product-review-item,
+.product-review-empty {
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 1.5rem;
+  background: #fff;
+  padding: 1.5rem;
+}
+
+.product-review-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.product-review-form__field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.product-review-form__field--full textarea,
+.product-review-form__field select {
+  width: 100%;
+  border: 1px solid rgba(15, 23, 42, 0.16);
+  border-radius: 1rem;
+  padding: 0.85rem 1rem;
+  font: inherit;
+}
+
+.product-review-form__message {
+  margin: 0;
+}
+
+.product-review-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.product-review-item__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
 .related-products__grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1845,6 +1900,10 @@ select {
   }
 
   .checkout-page__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-review-layout {
     grid-template-columns: 1fr;
   }
 

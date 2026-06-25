@@ -7,6 +7,7 @@ import {
 
 export function toProductViewModel(product) {
   return {
+    id: product.id,
     slug: product.slug,
     name: product.name,
     category: product.category?.name ?? "",

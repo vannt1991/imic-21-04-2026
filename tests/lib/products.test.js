@@ -5,6 +5,7 @@ describe("toProductViewModel", () => {
   it("flattens the category relation and derives inStock from stock", () => {
     expect(
       toProductViewModel({
+        id: "prod_1",
         slug: "air-runner-basic",
         name: "Air Runner Basic",
         description: "Mẫu sneaker gọn nhẹ, phù hợp cho buổi học đầu tiên.",
@@ -19,6 +20,7 @@ describe("toProductViewModel", () => {
         category: { name: "Running" },
       }),
     ).toEqual({
+      id: "prod_1",
       slug: "air-runner-basic",
       name: "Air Runner Basic",
       category: "Running",

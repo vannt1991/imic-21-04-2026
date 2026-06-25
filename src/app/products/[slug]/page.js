@@ -2,12 +2,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { ProductImage } from "@/components/product-image";
+import { ProductReviewSection } from "@/components/product-review-section";
+import { getCurrentUser } from "@/lib/auth";
 import {
   getProductBySlug,
   getProductSlugs,
   getRelatedProducts,
 } from "@/lib/products";
 import { formatVnd } from "@/lib/format-vnd";
+import { getProductReviewsForViewer } from "@/lib/product-reviews";
 
 export async function generateStaticParams() {
   return await getProductSlugs();
@@ -32,13 +35,20 @@ export async function generateMetadata({ params }) {
 
 export default async function ProductDetailPage({ params }) {
   const { slug } = await params;
+  const currentUser = await getCurrentUser();
   const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
-  const relatedProducts = await getRelatedProducts(product.slug);
+  const [relatedProducts, reviewData] = await Promise.all([
+    getRelatedProducts(product.slug),
+    getProductReviewsForViewer({
+      productId: product.id,
+      userId: currentUser?.id ?? null,
+    }),
+  ]);
   const isSale = Boolean(product.originalPrice);
 
   return (
@@ -95,6 +105,14 @@ export default async function ProductDetailPage({ params }) {
           </div>
         </div>
       </section>
+
+      <ProductReviewSection
+        productId={product.id}
+        productSlug={product.slug}
+        reviewSummary={reviewData.reviewSummary}
+        reviews={reviewData.reviews}
+        viewerReviewState={reviewData.viewerReviewState}
+      />
 
       <section className="product-detail__related">
         <div className="site-shell">
