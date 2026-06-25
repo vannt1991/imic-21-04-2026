@@ -138,12 +138,33 @@ export async function getCurrentUser(options = {}) {
   return session?.user ?? null;
 }
 
+export async function requireAuthenticatedUser(options = {}) {
+  const { nextPath = "/" } = options;
+  const user = await getCurrentUser(options);
+
+  if (!user) {
+    redirect(`/login?next=${encodeURIComponent(sanitizeNextPath(nextPath))}`);
+  }
+
+  return user;
+}
+
 export async function requireAdminUser(options = {}) {
   const { nextPath = "/admin" } = options;
   const user = await getCurrentUser(options);
 
   if (!user || user.role !== ROLE_ADMIN) {
     redirect(`/login?next=${encodeURIComponent(sanitizeNextPath(nextPath))}`);
+  }
+
+  return user;
+}
+
+export async function requireAuthenticatedApiUser(options = {}) {
+  const user = await getCurrentUser(options);
+
+  if (!user) {
+    return jsonError("Authentication required.", 401);
   }
 
   return user;

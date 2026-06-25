@@ -32,6 +32,8 @@ import {
   getCurrentUser,
   hashSessionToken,
   requireAdminUser,
+  requireAuthenticatedApiUser,
+  requireAuthenticatedUser,
   sanitizeNextPath,
 } from "../../src/lib/auth.js";
 
@@ -164,5 +166,76 @@ describe("auth helpers", () => {
         nextPath: "/admin",
       }),
     ).rejects.toThrow("REDIRECT:/login?next=%2Fadmin");
+  });
+
+  it("redirects anonymous users to login for authenticated storefront pages", async () => {
+    await expect(
+      requireAuthenticatedUser({
+        cookieStore: createCookieStore(),
+        nextPath: "/checkout",
+      }),
+    ).rejects.toThrow("REDIRECT:/login?next=%2Fcheckout");
+  });
+
+  it("returns the logged-in customer for generic authenticated pages", async () => {
+    process.env.AUTH_SECRET = "test-auth-secret";
+    db.session.findUnique.mockResolvedValue({
+      id: "sess_3",
+      expiresAt: new Date("2099-01-01T00:00:00.000Z"),
+      user: {
+        id: "user_customer",
+        name: "MiniShop Customer",
+        email: "customer@minishop.local",
+        role: ROLE_CUSTOMER,
+      },
+    });
+
+    await expect(
+      requireAuthenticatedUser({
+        cookieStore: createCookieStore("customer-token"),
+        nextPath: "/checkout",
+      }),
+    ).resolves.toEqual({
+      id: "user_customer",
+      name: "MiniShop Customer",
+      email: "customer@minishop.local",
+      role: ROLE_CUSTOMER,
+    });
+  });
+
+  it("returns 401 json for anonymous authenticated API requests", async () => {
+    const response = await requireAuthenticatedApiUser({
+      cookieStore: createCookieStore(),
+    });
+
+    expect(response.status).toBe(401);
+    await expect(response.json()).resolves.toEqual({
+      error: { message: "Authentication required." },
+    });
+  });
+
+  it("returns the current user for authenticated API requests", async () => {
+    process.env.AUTH_SECRET = "test-auth-secret";
+    db.session.findUnique.mockResolvedValue({
+      id: "sess_4",
+      expiresAt: new Date("2099-01-01T00:00:00.000Z"),
+      user: {
+        id: "user_customer",
+        name: "MiniShop Customer",
+        email: "customer@minishop.local",
+        role: ROLE_CUSTOMER,
+      },
+    });
+
+    await expect(
+      requireAuthenticatedApiUser({
+        cookieStore: createCookieStore("customer-token"),
+      }),
+    ).resolves.toEqual({
+      id: "user_customer",
+      name: "MiniShop Customer",
+      email: "customer@minishop.local",
+      role: ROLE_CUSTOMER,
+    });
   });
 });
