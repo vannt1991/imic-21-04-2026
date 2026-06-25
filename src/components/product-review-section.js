@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ProductReviewForm } from "@/components/product-review-form";
+import { ProductStarRating } from "@/components/product-star-rating";
 
 export function ProductReviewSection({
   productId,
@@ -8,16 +9,25 @@ export function ProductReviewSection({
   reviews,
   viewerReviewState,
 }) {
+  const hasReviews = reviewSummary.reviewCount > 0;
+
   return (
     <section className="product-detail__reviews">
       <div className="site-shell">
         <div className="section-heading">
           <p className="section-heading__eyebrow">Danh gia san pham</p>
-          <h2>
-            {reviewSummary.reviewCount > 0
-              ? `${reviewSummary.averageRating}/5 tu ${reviewSummary.reviewCount} danh gia`
-              : "Chua co danh gia nao"}
-          </h2>
+          <h2>{hasReviews ? "Danh gia tu khach hang" : "Chua co danh gia nao"}</h2>
+          {hasReviews ? (
+            <div className="product-review-summary">
+              <ProductStarRating
+                value={reviewSummary.averageRating}
+                label={`${reviewSummary.averageRating}/5`}
+                readOnly={true}
+              />
+              <strong>{reviewSummary.averageRating}/5</strong>
+              <span>tu {reviewSummary.reviewCount} danh gia</span>
+            </div>
+          ) : null}
         </div>
 
         <div className="product-review-layout">
@@ -54,7 +64,14 @@ export function ProductReviewSection({
                 <article key={review.id} className="product-review-item">
                   <div className="product-review-item__meta">
                     <strong>{review.reviewerName}</strong>
-                    <span>{review.rating}/5</span>
+                    <div className="product-review-item__rating">
+                      <ProductStarRating
+                        value={review.rating}
+                        label={`${review.rating} sao`}
+                        readOnly={true}
+                      />
+                      <span>{review.rating} sao</span>
+                    </div>
                   </div>
                   <p>{review.comment}</p>
                 </article>

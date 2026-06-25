@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ProductStarRating } from "@/components/product-star-rating";
 
 const defaultState = {
   errorMessage: "",
@@ -12,8 +13,10 @@ const defaultState = {
 export function ProductReviewForm({ productId, existingReview = null }) {
   const router = useRouter();
   const [rating, setRating] = useState(existingReview?.rating ?? 5);
+  const [previewRating, setPreviewRating] = useState(null);
   const [comment, setComment] = useState(existingReview?.comment ?? "");
   const [state, setState] = useState(defaultState);
+  const activeRating = previewRating ?? rating;
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -65,19 +68,18 @@ export function ProductReviewForm({ productId, existingReview = null }) {
 
   return (
     <form className="product-review-form" onSubmit={handleSubmit}>
-      <label className="product-review-form__field">
+      <div className="product-review-form__field">
         <span>So sao</span>
-        <select
-          value={rating}
-          onChange={(event) => setRating(event.target.value)}
-        >
-          {[5, 4, 3, 2, 1].map((value) => (
-            <option key={value} value={value}>
-              {value} sao
-            </option>
-          ))}
-        </select>
-      </label>
+        <div className="product-review-form__rating">
+          <ProductStarRating
+            value={rating}
+            label={`${activeRating} sao`}
+            onChange={setRating}
+            onPreviewChange={setPreviewRating}
+          />
+          <strong>{activeRating} sao</strong>
+        </div>
+      </div>
 
       <label className="product-review-form__field product-review-form__field--full">
         <span>Binh luan</span>

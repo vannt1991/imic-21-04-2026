@@ -75,9 +75,11 @@ test("eligible customer can preview stars before click and then publish the revi
   await page
     .getByLabel("Binh luan")
     .fill("Mang di hoc on, de phoi do va di rat em chan.");
-  await page.getByRole("button", { name: "Gui danh gia" }).click();
+  await page.getByRole("button", { name: "Cap nhat danh gia" }).click();
 
   await expect(page.getByText("Da cap nhat danh gia cua ban.")).toBeVisible();
   await expect(page.getByText("4/5", { exact: true })).toBeVisible();
-  await expect(page.getByText("4 sao", { exact: true })).toBeVisible();
+  await expect(page.locator(".product-review-item__rating > span")).toHaveText(
+    "4 sao",
+  );
 });
