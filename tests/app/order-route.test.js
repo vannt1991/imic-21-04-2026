@@ -1,16 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { db } = vi.hoisted(() => ({
+const { db, requireAuthenticatedApiUser } = vi.hoisted(() => ({
   db: {
     $transaction: vi.fn(),
     product: {
       findMany: vi.fn(),
     },
   },
+  requireAuthenticatedApiUser: vi.fn(),
 }));
 
 vi.mock("@/lib/db", () => ({
   db,
+}));
+
+vi.mock("@/lib/auth", () => ({
+  requireAuthenticatedApiUser,
 }));
 
 import { POST } from "@/app/api/orders/route";
@@ -60,6 +65,39 @@ async function readJson(response) {
 describe("POST /api/orders", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    requireAuthenticatedApiUser.mockResolvedValue({
+      id: "user_customer",
+      role: "CUSTOMER",
+      email: "customer@minishop.local",
+      name: "MiniShop Customer",
+    });
+  });
+
+  it("returns 401 for anonymous order requests", async () => {
+    requireAuthenticatedApiUser.mockResolvedValue(
+      Response.json(
+        { error: { message: "Authentication required." } },
+        { status: 401 },
+      ),
+    );
+
+    const response = await POST(
+      new Request("http://localhost/api/orders", {
+        method: "POST",
+        body: JSON.stringify({
+          customerName: "Van Nguyen",
+          customerEmail: "van@example.com",
+          customerPhone: "0901234567",
+          shippingAddress: "12 Nguyen Trai, District 1",
+          items: [{ slug: "air-runner-basic", quantity: 1 }],
+        }),
+        headers: { "content-type": "application/json" },
+      }),
+    );
+
+    expect(response.status).toBe(401);
+    expect(db.product.findMany).not.toHaveBeenCalled();
+    expect(db.$transaction).not.toHaveBeenCalled();
   });
 
   it("returns 400 validation envelope for invalid body", async () => {
@@ -396,6 +434,7 @@ describe("POST /api/orders", () => {
     });
     expect(orderCreate).toHaveBeenCalledWith({
       data: {
+        userId: "user_customer",
         customerName: "Van Nguyen",
         customerEmail: "van@example.com",
         customerPhone: "0901234567",

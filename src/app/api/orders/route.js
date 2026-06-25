@@ -1,4 +1,5 @@
 import { handleRouteError, jsonError } from "@/lib/api-response";
+import { requireAuthenticatedApiUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import {
   buildOrderDraft,
@@ -63,6 +64,12 @@ async function assertReservation(tx, reservation) {
 
 export async function POST(request) {
   try {
+    const user = await requireAuthenticatedApiUser();
+
+    if (user instanceof Response) {
+      return user;
+    }
+
     const payload = createOrderSchema.parse(await request.json());
     const slugs = getUniqueSlugs(payload.items);
     const products = await db.product.findMany({
@@ -82,6 +89,7 @@ export async function POST(request) {
 
       return tx.order.create({
         data: {
+          userId: user.id,
           ...draft.customer,
           status: "PENDING",
           total: draft.total,

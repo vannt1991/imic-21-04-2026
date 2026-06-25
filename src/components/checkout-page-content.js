@@ -14,10 +14,20 @@ const defaultFormValues = {
   shippingAddress: "",
 };
 
-export function CheckoutPageContent() {
+function buildInitialFormValues(currentUser) {
+  return {
+    ...defaultFormValues,
+    customerName: currentUser?.name ?? "",
+    customerEmail: currentUser?.email ?? "",
+  };
+}
+
+export function CheckoutPageContent({ currentUser = null }) {
   const router = useRouter();
   const { items, cartCount, subtotal, isHydrated, clearCart } = useCart();
-  const [formValues, setFormValues] = useState(defaultFormValues);
+  const [formValues, setFormValues] = useState(() =>
+    buildInitialFormValues(currentUser),
+  );
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submitInFlightRef = useRef(false);
